@@ -5,6 +5,7 @@
 }
 
 #map {
+    table-layout: fixed;
     line-height: 0;
     margin: 0 auto;
     padding: 0;
@@ -13,10 +14,8 @@
     border: solid 4px black;
 }
 
-#map div {
-    display: inline-block;
-    width: 5%;
-    height: 5%;
+#map td {
+    border: none;
     margin: 0;
     padding: 0;
 }
