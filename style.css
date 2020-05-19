@@ -17,13 +17,17 @@
 #map td {
     text-align: center;
     vertical-align: center;
+    overflow: hidden;
     line-height: 0;
     border: none;
     margin: 0;
     padding: 0;
+    /* width: 38px;
+    height: 38px; */
 }
 
 td img {
+    padding: 0;
     max-width: 100%;
     max-height: 100%;
     object-fit: cover;

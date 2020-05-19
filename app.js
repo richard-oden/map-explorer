@@ -30,14 +30,15 @@ for (let x = 0; x < mapArrX.length; x++) {
     for (let y = 0; y < mapArrX[x].length; y++) {
         let td = document.createElement("td");
         td.style.backgroundColor = mapArrX[x][y];
-        // Draw player character if center of map:
+        td.style.height = mapContainer.offsetHeight / mapArrX.length + 'px';
+        // Draw player character if td is in center of map:
         if (x === getCenter(mapArrX) && y === getCenter(mapArrX[x])) {
             td.setAttribute("id", "player");
             let playerIMG = document.createElement("img");
             playerIMG.setAttribute("src", "img/player.png");
             playerIMG.setAttribute("alt", "player");
             td.appendChild(playerIMG);
-            console.log("success");
+            console.log(td.style.height);
         }
         tr.appendChild(td);
     }
