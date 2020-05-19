@@ -6,7 +6,7 @@
 
 #map {
     table-layout: fixed;
-    line-height: 0;
+    border-spacing: 0;
     margin: 0 auto;
     padding: 0;
     width: 800px;
@@ -15,7 +15,16 @@
 }
 
 #map td {
+    text-align: center;
+    vertical-align: center;
+    line-height: 0;
     border: none;
     margin: 0;
     padding: 0;
+}
+
+td img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
 }

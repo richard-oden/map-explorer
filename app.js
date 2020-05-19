@@ -6,10 +6,15 @@ function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
 }
 
+function getCenter(arr) {
+    return Math.floor(arr.length / 2);
+}
+
 function print(message) {
     mapContainer.innerHTML += message;
 }
 
+// Create 2D array of terrain:
 for (let x = 0; x < 21; x++) {
     let mapArrY = []
     for (let y = 0; y < 21; y++) {
@@ -18,12 +23,23 @@ for (let x = 0; x < 21; x++) {
     mapArrX[x] = mapArrY;
 }
 
+// Draw terrain:
 for (let x = 0; x < mapArrX.length; x++) {
     let tr = document.createElement('tr');
     mapContainer.appendChild(tr);
     for (let y = 0; y < mapArrX[x].length; y++) {
         let td = document.createElement("td");
         td.style.backgroundColor = mapArrX[x][y];
+        // Draw player character if center of map:
+        if (x === getCenter(mapArrX) && y === getCenter(mapArrX[x])) {
+            td.setAttribute("id", "player");
+            let playerIMG = document.createElement("img");
+            playerIMG.setAttribute("src", "img/player.png");
+            playerIMG.setAttribute("alt", "player");
+            td.appendChild(playerIMG);
+            console.log("success");
+        }
         tr.appendChild(td);
     }
 }
+
