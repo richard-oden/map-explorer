@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
 
+:root {
+    --grid-cell-size: 4px;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -22,8 +26,8 @@
     border: none;
     margin: 0;
     padding: 0;
-    /* width: 38px;
-    height: 38px; */
+    width: var(--grid-cell-size);
+    height: var(--grid-cell-size);
 }
 
 td img {
