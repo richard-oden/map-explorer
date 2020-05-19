@@ -34,6 +34,7 @@ for (let x = 0; x < mapArrX.length; x++) {
     for (let y = 0; y < mapArrX[x].length; y++) {
         let td = document.createElement("td");
         td.style.backgroundColor = mapArrX[x][y];
+        root.style.setProperty('--grid-cell-size', mapContainer.offsetHeight / mapArrX.length + 'px');
         // Draw player character if td is in center of map:
         if (x === getCenter(mapArrX) && y === getCenter(mapArrX[x])) {
             td.setAttribute("id", "player");
