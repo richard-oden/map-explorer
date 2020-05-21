@@ -12,7 +12,7 @@ function getCenter(arr) {
 }
 
 function print(message) {
-    mapContainer.innerHTML += message;
+    mapContainer.innerHTML = message;
 }
 
 // Create 2D array of terrain:
@@ -24,27 +24,23 @@ for (let x = 0; x < 21; x++) {
     mapArrX[x] = mapArrY;
 }
 
-// Create CSS variable to assign cell size relative to number of rows:
-root.style.setProperty('--grid-cell-size', mapContainer.offsetHeight / mapArrX.length + 'px');
+// Create CSS variable to assign cell size relative to number of rows/columns:
+root.style.setProperty('--cell-height', mapContainer.offsetHeight / mapArrX.length + 'px');
+root.style.setProperty('--cell-width', mapContainer.offsetWidth / mapArrX[0].length + 'px');
 
 // Draw terrain:
+let html = '';
 for (let x = 0; x < mapArrX.length; x++) {
-    let tr = document.createElement('tr');
-    mapContainer.appendChild(tr);
+    html += `<tr>`;
     for (let y = 0; y < mapArrX[x].length; y++) {
-        let td = document.createElement("td");
-        td.style.backgroundColor = mapArrX[x][y];
-        root.style.setProperty('--grid-cell-size', mapContainer.offsetHeight / mapArrX.length + 'px');
+        html += `<td style="background-color:${mapArrX[x][y]};"`;
         // Draw player character if td is in center of map:
         if (x === getCenter(mapArrX) && y === getCenter(mapArrX[x])) {
-            td.setAttribute("id", "player");
-            let playerIMG = document.createElement("img");
-            playerIMG.setAttribute("src", "img/player.png");
-            playerIMG.setAttribute("alt", "player");
-            td.appendChild(playerIMG);
-            console.log(td.style.height);
+            html += ` id="player"><img src="img/player.png" alt="player">`;
         }
-        tr.appendChild(td);
+        html += `</td>`;
     }
+    html += `</tr>`;
 }
+print(html);
 
