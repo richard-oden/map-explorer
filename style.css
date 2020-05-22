@@ -37,3 +37,7 @@ td img {
     max-height: 100%;
     object-fit: cover;
 }
+
+.snake {
+    background: black;
+}
