@@ -71,16 +71,12 @@ for (let x = 0; x < 21; x++) {
     for (let y = 0; y < 21; y++) {
         if ( roll(2) && (y > 0 && x > 0) ) {
             let adjTerrain = [];
-            adjTerrain.push(mapArrX[x][y - 1]); 
-            adjTerrain.push(mapArrX[x - 1][y]); 
-            adjTerrain.push(mapArrX[x - 1][y - 1]);
+            adjTerrain.push(mapArrX[x][y - 1], mapArrX[x - 1][y], mapArrX[x - 1][y - 1]);
             if (y + 1 < mapArrX[x].length) {
-                adjTerrain.push(mapArrX[x][y + 1]); 
-                adjTerrain.push(mapArrX[x - 1][y + 1]);
+                adjTerrain.push(mapArrX[x][y + 1], mapArrX[x - 1][y + 1]);
             }
             if (x + 1 < mapArrX.length) {
-                adjTerrain.push(mapArrX[x + 1][y]);
-                adjTerrain.push(mapArrX[x + 1][y - 1]);
+                adjTerrain.push(mapArrX[x + 1][y], mapArrX[x + 1][y - 1]);
             }
             if (x + 1 < mapArrX.length && y + 1 < mapArrX[x].length) {
                 adjTerrain.push(mapArrX[x + 1][y + 1]);
