@@ -29,6 +29,7 @@
     padding: 0;
     width: var(--cell-width);
     height: var(--cell-height);
+    transition: .1s;
 }
 
 td img {
@@ -38,6 +39,7 @@ td img {
     object-fit: cover;
 }
 
-.snake {
-    background: black;
+#map td:hover {
+    border: 3px solid darkred;
+    cursor: pointer;
 }
