@@ -1,6 +1,6 @@
 const mapContainer = document.getElementById('map');
 const root = document.documentElement;
-let mapArrX = [];
+let mapArr = [];
 const terrain = ['#B0ED38', '#41B30C', '#EED869', '#CFCCBC', '#66B2EF'];
 
 function getRandTerrain() {
@@ -11,42 +11,46 @@ function getCenter(arr) {
     return Math.floor(arr.length / 2);
 }
 
-function roll(num) {
-    result = Math.floor(Math.random() * num) + 1;
-    if (num === result) return true;
+function chance(percent) {
+    result = Math.floor(Math.random() * 100) + 1;
+    if (result < percent) return true;
 }
 
 function print(message) {
     mapContainer.innerHTML = message;
 }
 
+function adjInBounds(arr2d, x, y) {
+    if ( (x > 0 && y > 0) && (x < arr2d.length+1 && y < arr2d[x].length+1) ) return true;
+}
+
 function drawMap() {
     // Draw terrain:
     let html = '';
-    for (let x = 0; x < mapArrX.length; x++) {
+    for (let x = 0; x < mapArr.length; x++) {
         html += `<tr>`;
-        for (let y = 0; y < mapArrX[x].length; y++) {
-            html += `<td style="background-color:${mapArrX[x][y]};"`;
+        for (let y = 0; y < mapArr[x].length; y++) {
+            html += `<td style="background-color:${mapArr[x][y]};"`;
             // Draw player character if td is in center of map:
-            if (x === getCenter(mapArrX) && y === getCenter(mapArrX[x])) {
+            if (x === getCenter(mapArr) && y === getCenter(mapArr[x])) {
                 html += ` id="player"><img src="img/player.png" alt="player">`;
             }
             // Draw locations based on terrain:
             // Plains
-            else if (mapArrX[x][y] === terrain[0]) {
-                if (roll(15)) html += ` class="snake"><img src="img/snake.png" alt="snake">`;
+            else if (mapArr[x][y] === terrain[0]) {
+                if (chance(8)) html += ` class="snake"><img src="img/snake.png" alt="snake">`;
             // Forest
-            } else if (mapArrX[x][y] === terrain[1]) {
-                if (roll(15)) html += ` class="bear"><img src="img/bear.png" alt="bear">`;
+            } else if (mapArr[x][y] === terrain[1]) {
+                if (chance(8)) html += ` class="bear"><img src="img/bear.png" alt="bear">`;
             // Desert
-            } else if (mapArrX[x][y] === terrain[2]) {
-                if (roll(15)) html += ` class="scorpion"><img src="img/scorpion.png" alt="scorpion">`;
+            } else if (mapArr[x][y] === terrain[2]) {
+                if (chance(8)) html += ` class="scorpion"><img src="img/scorpion.png" alt="scorpion">`;
             // Mountain
-            } else if (mapArrX[x][y] === terrain[3]) {
+            } else if (mapArr[x][y] === terrain[3]) {
 
             // Water
-            } else if (mapArrX[x][y] === terrain[4]) {
-                if (roll(15)) html += ` class="shark"><img src="img/shark.png" alt="shark">`;
+            } else if (mapArr[x][y] === terrain[4]) {
+                if (chance(8)) html += ` class="shark"><img src="img/shark.png" alt="shark">`;
             } 
             html += `</td>`;
         }
@@ -57,39 +61,34 @@ function drawMap() {
 
 // Create 2D array of terrain:
 for (let x = 0; x < 21; x++) {
-    let mapArrY = []
+    mapArr[x] = []
     for (let y = 0; y < 21; y++) {
-        mapArrY[y] = getRandTerrain();
+        mapArr[x][y] = getRandTerrain();
     }
-    mapArrX[x] = mapArrY;
 }
 
 // Create larger chunks of terrain:
-// Randomly copy adjacent cell (50%) unless it is first element in mapArrX or mapArrY:
 for (let x = 0; x < 21; x++) {
-    let mapArrY = []
     for (let y = 0; y < 21; y++) {
-        if ( roll(2) && (y > 0 && x > 0) ) {
+        if (adjInBounds(mapArr, x, y)) {
             let adjTerrain = [];
-            adjTerrain.push(mapArrX[x][y - 1], mapArrX[x - 1][y], mapArrX[x - 1][y - 1]);
-            if (y + 1 < mapArrX[x].length) {
-                adjTerrain.push(mapArrX[x][y + 1], mapArrX[x - 1][y + 1]);
-            }
-            if (x + 1 < mapArrX.length) {
-                adjTerrain.push(mapArrX[x + 1][y], mapArrX[x + 1][y - 1]);
-            }
-            if (x + 1 < mapArrX.length && y + 1 < mapArrX[x].length) {
-                adjTerrain.push(mapArrX[x + 1][y + 1]);
-            }
+            adjTerrain.push(
+                mapArr[x][y - 1],
+                mapArr[x][y + 1], 
+                mapArr[x - 1][y], 
+                mapArr[x - 1][y - 1],
+                mapArr[x - 1][y + 1],
+                mapArr[x + 1][y],
+                mapArr[x + 1][y - 1],
+                mapArr[x + 1][y + 1]
+            );
             console.log(adjTerrain);
-            mapArrY[y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
         }
     }
-    mapArrX[x] = mapArrY;
 }
 
 // Create CSS variable to assign cell size relative to number of rows/columns:
-root.style.setProperty('--cell-height', mapContainer.offsetHeight / mapArrX.length + 'px');
-root.style.setProperty('--cell-width', mapContainer.offsetWidth / mapArrX[0].length + 'px');
+root.style.setProperty('--cell-height', mapContainer.offsetHeight / mapArr.length + 'px');
+root.style.setProperty('--cell-width', mapContainer.offsetWidth / mapArr[0].length + 'px');
 
 drawMap();
