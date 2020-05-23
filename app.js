@@ -2,6 +2,7 @@ const mapContainer = document.getElementById('map');
 const root = document.documentElement;
 let mapArr = [];
 const terrain = ['#B0ED38', '#41B30C', '#EED869', '#CFCCBC', '#66B2EF'];
+let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
 
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
@@ -13,15 +14,15 @@ function getCenter(arr) {
 
 function chance(percent) {
     result = Math.floor(Math.random() * 100) + 1;
-    if (result < percent) return true;
+    if (result <= percent) return true;
 }
 
 function print(message) {
     mapContainer.innerHTML = message;
 }
 
-function adjInBounds(arr2d, x, y) {
-    if ( (x > 0 && y > 0) && (x < arr2d.length+1 && y < arr2d[x].length+1) ) return true;
+function inBounds(arr2d, x, y) {
+    if ( (x > 0 && y > 0) && (x < arr2d.length-1 && y < arr2d[x].length-1) ) return true;
 }
 
 function drawMap() {
@@ -68,22 +69,16 @@ for (let x = 0; x < 21; x++) {
 }
 
 // Create larger chunks of terrain:
-for (let x = 0; x < 21; x++) {
-    for (let y = 0; y < 21; y++) {
-        if (adjInBounds(mapArr, x, y)) {
-            let adjTerrain = [];
-            adjTerrain.push(
-                mapArr[x][y - 1],
-                mapArr[x][y + 1], 
-                mapArr[x - 1][y], 
-                mapArr[x - 1][y - 1],
-                mapArr[x - 1][y + 1],
-                mapArr[x + 1][y],
-                mapArr[x + 1][y - 1],
-                mapArr[x + 1][y + 1]
-            );
-            console.log(adjTerrain);
+for (let x = 0; x < mapArr.length; x++) {
+    for (let y = 0; y < mapArr.length; y++) {
+        let adjTerrain = [];
+        for (let v = 0; v < 8; v++) {
+            xo = x + adjVectors[v][0];
+            yo = y + adjVectors[v][1];
+            if (inBounds(mapArr, xo, yo)) adjTerrain.push(mapArr[xo][yo]);
         }
+        console.log(adjTerrain);
+        if (chance(75)) mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
     }
 }
 
