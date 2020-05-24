@@ -39,19 +39,19 @@ function drawMap() {
             // Draw locations based on terrain:
             // Plains
             else if (mapArr[x][y] === terrain[0]) {
-                if (chance(8)) html += ` class="snake"><img src="img/snake.png" alt="snake">`;
+                if (chance(5)) html += ` class="snake"><img src="img/snake.png" alt="snake">`;
             // Forest
             } else if (mapArr[x][y] === terrain[1]) {
-                if (chance(8)) html += ` class="bear"><img src="img/bear.png" alt="bear">`;
+                if (chance(5)) html += ` class="bear"><img src="img/bear.png" alt="bear">`;
             // Desert
             } else if (mapArr[x][y] === terrain[2]) {
-                if (chance(8)) html += ` class="scorpion"><img src="img/scorpion.png" alt="scorpion">`;
+                if (chance(5)) html += ` class="scorpion"><img src="img/scorpion.png" alt="scorpion">`;
             // Mountain
             } else if (mapArr[x][y] === terrain[3]) {
 
             // Water
             } else if (mapArr[x][y] === terrain[4]) {
-                if (chance(8)) html += ` class="shark"><img src="img/shark.png" alt="shark">`;
+                if (chance(5)) html += ` class="shark"><img src="img/shark.png" alt="shark">`;
             } 
             html += `</td>`;
         }
@@ -78,7 +78,7 @@ for (let x = 0; x < mapArr.length; x++) {
             if (inBounds(mapArr, xo, yo)) adjTerrain.push(mapArr[xo][yo]);
         }
         console.log(adjTerrain);
-        if (chance(75)) mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
+        mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
     }
 }
 

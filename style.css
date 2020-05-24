@@ -9,6 +9,16 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+main {
+    width: 90%;
+    margin: 0 auto;
+    padding: 25px 0;
+}
+
 #map {
     table-layout: fixed;
     border-spacing: 0;
