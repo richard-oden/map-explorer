@@ -11,12 +11,19 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 main {
-    width: 90%;
-    margin: 0 auto;
+    width: 70vw;
+    justify-self: center;
     padding: 25px 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #map {
@@ -24,8 +31,8 @@ main {
     border-spacing: 0;
     margin: 0 auto;
     padding: 0;
-    width: 800px;
-    height: 800px;
+    width: 100%;
+    height: 70vw;
     border: solid 4px black;
 }
 
@@ -53,3 +60,42 @@ td img {
     border: 3px solid darkred;
     cursor: pointer;
 }
+
+#stats-wrapper {
+    width: 100%;
+    margin: 20px auto;
+    padding-top: 20px;
+    border-top: 3px solid lightgray;
+    color: darkslategray;
+    font-size: 1.5em;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+#player-meters {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#player-meters li {
+    padding: .2em 0;
+}
+
+#turn-counter {
+    float: right;
+}
+
+/* Media Queries ---------------------------- */
+/* @media (min-width: 800px) {
+    main {
+        width: 60vw;
+    }
+}
+
+@media (min-width: 1000px) {
+    :root {
+        --content-width: 800px;
+    }
+} */
