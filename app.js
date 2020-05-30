@@ -5,6 +5,7 @@ const terrain = ['#B0ED38', '#41B30C', '#EED869', '#CFCCBC', '#66B2EF'];
 let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
 let turnCounter = document.querySelector('#turn-counter > span');
 let turn = 1;
+let initalizing = true;
 
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
@@ -25,6 +26,42 @@ function print(message) {
 
 function inBounds(arr2d, x, y) {
     if ( (x > 0 && y > 0) && (x < arr2d.length-1 && y < arr2d[x].length-1) ) return true;
+}
+
+// function populateMap() {
+//     // Populate map based on terrain:
+//         // Plains
+//         spawnEntity(2,  terrain[0], "snake");
+//         // Forest
+//         spawnEntity(2,  terrain[1], "bear");
+//         // Desert
+//         spawnEntity(2,  terrain[2], "scorpion");
+//         // Mountain
+        
+//         // Water
+//         spawnEntity(2,  terrain[4], "shark");
+// }
+
+function drawMap() {
+    // Draw terrain:
+    let html = '';
+    for (let x = 0; x < mapArr.length; x++) {
+        html += `<tr>`;
+        for (let y = 0; y < mapArr[x].length; y++) {
+            html += `<td style="background-color: ${mapArr[x][y]};"`;
+            // Draw player character if td is in center of map:
+            if (x === getCenter(mapArr) && y === getCenter(mapArr[x])) {
+                html += ` id="player">`;
+            // } else if (initalizing === true) {
+            //     populateMap();
+            } else {
+                html += `>`;
+            }
+            html += `</td>`;
+        }
+        html += `</tr>`;
+    }
+    print(html);
 }
 
 function drawHorizon(previousHorizon) {
@@ -59,41 +96,6 @@ function drawHorizon(previousHorizon) {
     });
     console.log(newHorizon);
     return newHorizon;
-}
-
-function drawMap() {
-    // Draw terrain:
-    let html = '';
-    for (let x = 0; x < mapArr.length; x++) {
-        html += `<tr>`;
-        for (let y = 0; y < mapArr[x].length; y++) {
-            html += `<td style="background-color:${mapArr[x][y]};"`;
-            // Draw player character if td is in center of map:
-            if (x === getCenter(mapArr) && y === getCenter(mapArr[x])) {
-                html += ` id="player"><img src="img/player.png" alt="player">`;
-            }
-            // Draw locations based on terrain:
-            // Plains
-            else if (mapArr[x][y] === terrain[0]) {
-                if (chance(5)) html += ` class="snake"><img src="img/snake.png" alt="snake">`;
-            // Forest
-            } else if (mapArr[x][y] === terrain[1]) {
-                if (chance(5)) html += ` class="bear"><img src="img/bear.png" alt="bear">`;
-            // Desert
-            } else if (mapArr[x][y] === terrain[2]) {
-                if (chance(5)) html += ` class="scorpion"><img src="img/scorpion.png" alt="scorpion">`;
-            // Mountain
-            } else if (mapArr[x][y] === terrain[3]) {
-
-            // Water
-            } else if (mapArr[x][y] === terrain[4]) {
-                if (chance(5)) html += ` class="shark"><img src="img/shark.png" alt="shark">`;
-            } 
-            html += `</td>`;
-        }
-        html += `</tr>`;
-    }
-    print(html);
 }
 
 function movePlayer(direction) {

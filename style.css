@@ -49,11 +49,8 @@ main {
     transition: .1s;
 }
 
-td img {
-    padding: 0;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
+#player {
+    background-image: url("img/player.png");
 }
 
 #map td:hover {
