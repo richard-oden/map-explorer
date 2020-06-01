@@ -1,18 +1,22 @@
 const mapContainer = document.getElementById('map');
 const root = document.documentElement;
 let mapArr = [];
-const terrain = ['#B0ED38', '#41B30C', '#EED869', '#CFCCBC', '#66B2EF'];
+let numRowsAndColumns = 21;
+const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
 let turnCounter = document.querySelector('#turn-counter > span');
 let turn = 1;
-let initalizing = true;
 
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
 }
 
-function getCenter(arr) {
-    return Math.floor(arr.length / 2);
+function nthWord(string, n) {
+    return string.split(' ')[n-1];
+}
+
+function isCenter(arr2d, x, y) {
+    if (x === Math.floor(arr2d.length / 2) && y === Math.floor(arr2d.length / 2)) return true;
 }
 
 function chance(percent) {
@@ -28,45 +32,68 @@ function inBounds(arr2d, x, y) {
     if ( (x > 0 && y > 0) && (x < arr2d.length-1 && y < arr2d[x].length-1) ) return true;
 }
 
-// function populateMap() {
-//     // Populate map based on terrain:
-//         // Plains
-//         spawnEntity(2,  terrain[0], "snake");
-//         // Forest
-//         spawnEntity(2,  terrain[1], "bear");
-//         // Desert
-//         spawnEntity(2,  terrain[2], "scorpion");
-//         // Mountain
-        
-//         // Water
-//         spawnEntity(2,  terrain[4], "shark");
-// }
+function createArray(length) {
+    for (let x = 0; x < length; x++) {
+        mapArr[x] = []
+        for (let y = 0; y < length; y++) {
+            mapArr[x][y] = getRandTerrain();
+        }
+    }
+}
+
+function createChunks() {
+    for (let x = 0; x < mapArr.length; x++) {
+        for (let y = 0; y < mapArr.length; y++) {
+            let adjTerrain = [];
+            for (let v = 0; v < 8; v++) {
+                xo = x + adjVectors[v][0];
+                yo = y + adjVectors[v][1];
+                if (inBounds(mapArr, xo, yo)) adjTerrain.push(mapArr[xo][yo]);
+            }
+            mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
+        }
+    }
+}
+
+function createEntities() {
+    for (let x = 0; x < mapArr.length; x++) {
+        for (let y = 0; y < mapArr.length; y++) {
+            if (mapArr[x][y] === "plains" && chance(10)) {
+                mapArr[x][y] += " snake";
+            } else if (mapArr[x][y] === "forest" && chance(10)) {
+                mapArr[x][y] += " bear";
+            } else if (mapArr[x][y] === "desert" && chance(10)) {
+                mapArr[x][y] += " scorpion";
+            } else if (mapArr[x][y] === "mountain" && chance(10)) {
+
+            } else if (mapArr[x][y] === "water" && chance(10)) {
+                mapArr[x][y] += " shark";
+            }
+        }
+    }
+}
 
 function drawMap() {
     // Draw terrain:
     let html = '';
     for (let x = 0; x < mapArr.length; x++) {
-        html += `<tr>`;
         for (let y = 0; y < mapArr[x].length; y++) {
-            html += `<td style="background-color: ${mapArr[x][y]};"`;
-            // Draw player character if td is in center of map:
-            if (x === getCenter(mapArr) && y === getCenter(mapArr[x])) {
-                html += ` id="player">`;
-            // } else if (initalizing === true) {
-            //     populateMap();
-            } else {
-                html += `>`;
-            }
-            html += `</td>`;
+            html += `<div class="${mapArr[x][y]}">`;
+                entity = nthWord(mapArr[x][y], 2);
+                if (entity !== undefined) {
+                   html += `<img class="${entity}" src="img/${entity}.png" alt="${entity}">`;
+                } else if (isCenter(mapArr, x, y)) {
+                   html += `<img class="player" src="img/player.png" alt="player">`;
+                }
+            html += `</div>`;
         }
-        html += `</tr>`;
     }
     print(html);
 }
 
 function drawHorizon(previousHorizon) {
     let newHorizon = [];
-    previousHorizon.forEach(function(item) {
+    previousHorizon.forEach(item => {
         index = previousHorizon.indexOf(item);
         if (index === 0) {
             if (chance(75)) {
@@ -94,7 +121,6 @@ function drawHorizon(previousHorizon) {
             }
         }
     });
-    console.log(newHorizon);
     return newHorizon;
 }
 
@@ -139,40 +165,17 @@ function movePlayer(direction) {
             break;
     }
     drawMap();
+    turn++;
+    turnCounter.innerHTML = turn;
 }
 
-// Create 2D array of terrain:
-for (let x = 0; x < 21; x++) {
-    mapArr[x] = []
-    for (let y = 0; y < 21; y++) {
-        mapArr[x][y] = getRandTerrain();
-    }
-}
+root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
 
-// Create larger chunks of terrain:
-for (let x = 0; x < mapArr.length; x++) {
-    for (let y = 0; y < mapArr.length; y++) {
-        let adjTerrain = [];
-        for (let v = 0; v < 8; v++) {
-            xo = x + adjVectors[v][0];
-            yo = y + adjVectors[v][1];
-            if (inBounds(mapArr, xo, yo)) adjTerrain.push(mapArr[xo][yo]);
-        }
-        mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
-    }
-}
-
-// Create CSS variable to assign cell size relative to number of rows/columns:
-root.style.setProperty('--cell-height', mapContainer.offsetHeight / mapArr.length + 'px');
-root.style.setProperty('--cell-width', mapContainer.offsetWidth / mapArr[0].length + 'px');
-
+createArray(numRowsAndColumns);
+createChunks();
+createEntities();
 drawMap();
 
-let player = document.getElementById('player');
-let snakes = document.getElementsByClassName('snake');
-let bears = document.getElementsByClassName('bear');
-let scorpions = document.getElementsByClassName('scorpion');
-let sharks = document.getElementsByClassName('shark');
 
 // Capture input and move player:
 window.addEventListener("keydown", function(event) {
@@ -182,25 +185,19 @@ window.addEventListener("keydown", function(event) {
     switch (event.code) {
         case "KeyS":
         case "ArrowDown":
-            console.log("Moved down");
             movePlayer("down");
             break;
         case "KeyW":
         case "ArrowUp":
-            console.log("Moved up");
             movePlayer("up");
             break;
         case "KeyA":
         case "ArrowLeft":
-            console.log("Moved left");
             movePlayer("left");
             break;
         case "KeyD":
         case "ArrowRight":
-            console.log("Moved right");
             movePlayer("right");
             break;
     }
-    turn++;
-    turnCounter.innerHTML = turn;
 });
