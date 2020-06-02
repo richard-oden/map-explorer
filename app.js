@@ -55,20 +55,25 @@ function createChunks() {
     }
 }
 
-function createEntities() {
+function createEntities(cell) {
+    if (cell === "plains" && chance(10)) {
+        cell += " snake";
+    } else if (cell === "forest" && chance(10)) {
+        cell += " bear";
+    } else if (cell === "desert" && chance(10)) {
+        cell += " scorpion";
+    } else if (cell === "mountain" && chance(10)) {
+
+    } else if (cell === "water" && chance(10)) {
+        cell += " shark";
+    }
+    return cell;
+}
+
+function populateMap() {
     for (let x = 0; x < mapArr.length; x++) {
         for (let y = 0; y < mapArr.length; y++) {
-            if (mapArr[x][y] === "plains" && chance(10)) {
-                mapArr[x][y] += " snake";
-            } else if (mapArr[x][y] === "forest" && chance(10)) {
-                mapArr[x][y] += " bear";
-            } else if (mapArr[x][y] === "desert" && chance(10)) {
-                mapArr[x][y] += " scorpion";
-            } else if (mapArr[x][y] === "mountain" && chance(10)) {
-
-            } else if (mapArr[x][y] === "water" && chance(10)) {
-                mapArr[x][y] += " shark";
-            }
+            mapArr[x][y] = createEntities(mapArr[x][y]);
         }
     }
 }
@@ -97,30 +102,33 @@ function drawHorizon(previousHorizon) {
         index = previousHorizon.indexOf(item);
         if (index === 0) {
             if (chance(75)) {
-                newHorizon.push(chance(50) ? previousHorizon[index] : previousHorizon[index+1]);
+                newHorizon.push(nthWord(chance(50) ? previousHorizon[index] : previousHorizon[index+1], 1));
             } else {
                 newHorizon.push(getRandTerrain());
             }
         } else if (index === previousHorizon.length-1) {
             if (chance(75)) {
-                newHorizon.push(chance(50) ? previousHorizon[index] : previousHorizon[index-1]);
+                newHorizon.push(nthWord(chance(50) ? previousHorizon[index] : previousHorizon[index-1], 1));
             } else {
                 newHorizon.push(getRandTerrain());
             }
         } else {
             if (chance(75)) {
                 if (chance(50)) {
-                    newHorizon.push(previousHorizon[index+1]);
+                    newHorizon.push(nthWord(previousHorizon[index+1], 1));
                 } else if (chance(50)) {
-                    newHorizon.push(previousHorizon[index-1]);
+                    newHorizon.push(nthWord(previousHorizon[index-1], 1));
                 } else {
-                    newHorizon.push(previousHorizon[index]);
+                    newHorizon.push(nthWord(previousHorizon[index], 1));
                 }
             } else {
                 newHorizon.push(getRandTerrain());
             }
         }
     });
+     for (let i = 0; i < newHorizon.length; i++) {
+         newHorizon[i] = createEntities(newHorizon[i]);
+     }
     return newHorizon;
 }
 
@@ -173,7 +181,7 @@ root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1
 
 createArray(numRowsAndColumns);
 createChunks();
-createEntities();
+populateMap();
 drawMap();
 
 
