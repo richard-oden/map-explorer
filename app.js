@@ -7,6 +7,11 @@ let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1],
 let moveCounter = document.querySelector('#turn-counter > span');
 let move = 1;
 
+const dPadUp = document.getElementById("dpad-up");
+const dPadLeft = document.getElementById("dpad-left");
+const dPadRight = document.getElementById("dpad-right");
+const dPadDown = document.getElementById("dpad-down");
+
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
 }
@@ -141,13 +146,6 @@ function movePlayer(direction) {
             mapArr[0] = drawHorizon(mapArr[0]);
             break;
 
-        case "down":
-            for (let x = 0; x < mapArr.length-1; x++) {
-                mapArr[x] = mapArr[x+1];
-            }
-            mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
-            break;
-
         case "left":
             let oldHorizonLeft = [];
             for (let x = 0; x < mapArr.length; x++) {
@@ -171,6 +169,13 @@ function movePlayer(direction) {
                 mapArr[x].shift();
             }
             break;
+
+            case "down":
+                for (let x = 0; x < mapArr.length-1; x++) {
+                    mapArr[x] = mapArr[x+1];
+            }
+            mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
+            break;
     }
     drawMap();
     move++;
@@ -191,10 +196,6 @@ window.addEventListener("keydown", function(event) {
         return; // Do nothing if event already handled
     }
     switch (event.code) {
-        case "KeyS":
-        case "ArrowDown":
-            movePlayer("down");
-            break;
         case "KeyW":
         case "ArrowUp":
             movePlayer("up");
@@ -207,5 +208,14 @@ window.addEventListener("keydown", function(event) {
         case "ArrowRight":
             movePlayer("right");
             break;
+        case "KeyS":
+        case "ArrowDown":
+            movePlayer("down");
+            break;
     }
 });
+
+dPadUp.addEventListener("click", function() {movePlayer("up")});
+dPadLeft.addEventListener("click", function() {movePlayer("left")});
+dPadRight.addEventListener("click", function() {movePlayer("right")});
+dPadDown.addEventListener("click", function() {movePlayer("down")});
