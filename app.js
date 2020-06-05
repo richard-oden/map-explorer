@@ -4,8 +4,8 @@ let mapArr = [];
 let numRowsAndColumns = 21;
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
-let turnCounter = document.querySelector('#turn-counter > span');
-let turn = 1;
+let moveCounter = document.querySelector('#turn-counter > span');
+let move = 1;
 
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
@@ -173,8 +173,8 @@ function movePlayer(direction) {
             break;
     }
     drawMap();
-    turn++;
-    turnCounter.innerHTML = turn;
+    move++;
+    moveCounter.innerHTML = move;
 }
 
 root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
