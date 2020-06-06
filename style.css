@@ -83,6 +83,10 @@ main {
     text-align: right;
 }
 
+#turn-counter p {
+    margin: 0;
+}
+
 /* Map styles ---------------------------- */
 
 #map {
@@ -140,6 +144,8 @@ main {
 /* Dpad styles ---------------------------- */
 
 #dpad {
+    background-color: lightgrey;
+    border-radius: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
@@ -152,10 +158,16 @@ main {
     object-fit: contain;
     max-width: 100%;
     max-height: 100%;
+    opacity: 0.6;
 }
 
-#dpad div:hover {
+#dpad div img:hover {
     cursor: pointer;
+    opacity: 1;
+}
+
+#dpad div img:active {
+    opacity: .2;
 }
 
 #dpad-up {
@@ -205,22 +217,22 @@ main {
         border-left: 3px solid lightgray;
         padding: 20px 0 20px 40px;
         margin-left: 20px;
+        text-align: left;
 
         flex-direction: column-reverse;
     }
 
     #dpad-wrapper {
         flex: 1;
+        margin: 20px;
     }
 
     #dpad {
         width: 200px;
         height: 200px;
-        margin: auto 0;
     }
 
     #turn-counter {
-        height: auto;
         text-align: left;
     }
 }
@@ -230,11 +242,13 @@ main {
         grid-template-columns: 700px 1fr;
         grid-template-rows: 1fr 700px; 
     }
-}
 
-@media (min-width: 1600px) {
-    main {
-        grid-template-columns: 900px 1fr;
-        grid-template-rows: 1fr 900px; 
+    #stats-dpad {
+        font-size: 2em;
+    }
+
+    #dpad {
+        width: 300px;
+        height: 300px;
     }
 }

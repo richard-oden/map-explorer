@@ -3,9 +3,16 @@ const root = document.documentElement;
 let mapArr = [];
 let numRowsAndColumns = 21;
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
+let player;
 let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
-let moveCounter = document.querySelector('#turn-counter > span');
-let move = 1;
+let move = 12;
+let day = document.getElementById("day");
+let hr = document.getElementById("hr");
+let min = document.getElementById("min");
+let amPM = document.getElementById("am-pm");
+let playerEnergy = document.getElementById("player-energy");
+let playerHunger = document.getElementById("player-hunger");
+let playerThirst = document.getElementById("player-thirst");
 
 const dPadUp = document.getElementById("dpad-up");
 const dPadLeft = document.getElementById("dpad-left");
@@ -61,15 +68,15 @@ function createChunks() {
 }
 
 function createEntities(cell) {
-    if (cell === "plains" && chance(10)) {
+    if (cell === "plains" && chance(4)) {
         cell += " snake";
-    } else if (cell === "forest" && chance(10)) {
+    } else if (cell === "forest" && chance(4)) {
         cell += " bear";
-    } else if (cell === "desert" && chance(10)) {
+    } else if (cell === "desert" && chance(4)) {
         cell += " scorpion";
-    } else if (cell === "mountain" && chance(10)) {
+    } else if (cell === "mountain" && chance(4)) {
 
-    } else if (cell === "water" && chance(10)) {
+    } else if (cell === "water" && chance(4)) {
         cell += " shark";
     }
     return cell;
@@ -137,6 +144,56 @@ function drawHorizon(previousHorizon) {
     return newHorizon;
 }
 
+function changePlayerMeters(energy, hunger, thirst) {
+    playerEnergy.innerHTML = parseInt(playerEnergy.innerHTML) + energy;
+    playerHunger.innerHTML = parseInt(playerHunger.innerHTML) + hunger;
+    playerThirst.innerHTML = parseInt(playerThirst.innerHTML) + thirst;
+}
+
+function applyTerrainEffects() {
+    player = document.querySelector("img.player");
+    switch (player.parentElement.className) {
+        case "plains":
+            changePlayerMeters(-1, -2, -3);
+        break;
+        case "forest":
+            changePlayerMeters(-2, -2, -3);
+        break;
+        case "desert":
+            changePlayerMeters(-1, -2, -5);
+        break;
+        case "mountain":
+            changePlayerMeters(-3, -2, -3);
+        break;
+        case "water":
+            changePlayerMeters(-5, -2, -1);
+        break;
+    }
+}
+
+function addTime() {
+    move++;
+    if (move%2 != 0) {
+        min.innerHTML = "30";
+    } else {
+        newHr = parseInt(hr.innerHTML) + 1;
+        if (newHr === 12) {
+            amPM.innerHTML = (amPM.innerHTML === "am" ? "pm" : "am");
+            hr.innerHTML = newHr;
+        } else if (newHr > 12) {
+            hr.innerHTML = 1;
+        } else {
+            hr.innerHTML = newHr;
+        }
+
+        min.innerHTML = "00";
+
+        if (move%48 == 0) {
+            day.innerHTML = parseInt(day.innerHTML) + 1;
+        }
+    }
+}
+
 function movePlayer(direction) {
     switch (direction) {
         case "up":
@@ -178,8 +235,8 @@ function movePlayer(direction) {
             break;
     }
     drawMap();
-    move++;
-    moveCounter.innerHTML = move;
+    applyTerrainEffects();
+    addTime();
 }
 
 root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
@@ -214,7 +271,6 @@ window.addEventListener("keydown", function(event) {
             break;
     }
 });
-
 dPadUp.addEventListener("click", function() {movePlayer("up")});
 dPadLeft.addEventListener("click", function() {movePlayer("left")});
 dPadRight.addEventListener("click", function() {movePlayer("right")});

@@ -10,7 +10,7 @@
     <main>
         <div id="headings">
             <h1 class="main-heading">Map Explorer</h1>
-            <p class="sub-heading">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD or the arrow keys to move. How long can you survive?</p>
+            <p class="sub-heading">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. How long can you survive?</p>
         </div>
 
         <div id="map">
@@ -18,9 +18,9 @@
 
         <div id="stats-dpad">
             <ul id="player-meters">
-                <li id="player-energy"><img src="img/health.png" alt="Health"> </span>100%</span></li>
-                <li id="player-hunger"><img src="img/hunger.png" alt="Hunger"> <span>100%</span></li>
-                <li id="player-thirst"><img src="img/thirst.png" alt="Thirst"> <span>100%</span></li>
+                <li><img src="img/health.png" alt="Health"> <span id="player-energy">100</span>%</li>
+                <li><img src="img/hunger.png" alt="Hunger"> <span id="player-hunger">100</span>%</li>
+                <li><img src="img/thirst.png" alt="Thirst"> <span id="player-thirst">100</span>%</li>
             </ul>
             <div id="dpad-wrapper">
                 <div id="dpad">
@@ -30,7 +30,10 @@
                     <div id="dpad-down"><img src="img/arrow.png" alt="Down arrow"></div>
                 </div>
             </div>
-            <div id ="turn-counter">Turn: <span>1</span></div>
+            <div id="turn-counter">
+                <p>Day: <span id="day">1</span></p>
+                <p><span id="hr">6</span>:<span id="min">00</span> <span id="am-pm">am</span></p>
+            </div>
         </div>
     </main>
     <footer>
