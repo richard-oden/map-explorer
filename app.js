@@ -198,53 +198,55 @@ function addTime() {
     }
 }
 
-function movePlayer(direction) {
-    switch (direction) {
-        case "up":
-            for (let x = mapArr.length-1; x > 0; x--) {
-                mapArr[x] = mapArr[x-1];
-            }
-            mapArr[0] = drawHorizon(mapArr[0]);
-            break;
-
-        case "left":
-            let oldHorizonLeft = [];
-            for (let x = 0; x < mapArr.length; x++) {
-                oldHorizonLeft.push(mapArr[x][0]);
-            }
-            let newHorizonLeft = drawHorizon(oldHorizonLeft);
-            for (let x = 0; x < mapArr.length; x++) {
-                mapArr[x].unshift(newHorizonLeft[x]);
-                mapArr[x].pop();
-            }
-            break;
-
-        case "right":
-            let oldHorizonRight = [];
-            for (let x = 0; x < mapArr.length; x++) {
-                oldHorizonRight.push(mapArr[x][mapArr.length-1]);
-            }
-            let newHorizonRight = drawHorizon(oldHorizonRight);
-            for (let x = 0; x < mapArr.length; x++) {
-                mapArr[x].push(newHorizonRight[x]);
-                mapArr[x].shift();
-            }
-            break;
-
-            case "down":
-                for (let x = 0; x < mapArr.length-1; x++) {
-                    mapArr[x] = mapArr[x+1];
-            }
-            mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
-            break;
-    }
-    drawMap();
-    applyTerrainEffects();
-    addTime();
-}
-
 function toggleActionPrompt() {
     actionPromptModal.style.display = (actionPromptModal.style.display === "block" ? "" : "block");
+}
+
+function movePlayer(direction) {
+    if (actionPromptModal.style.display === "") {
+        switch (direction) {
+            case "up":
+                for (let x = mapArr.length-1; x > 0; x--) {
+                    mapArr[x] = mapArr[x-1];
+                }
+                mapArr[0] = drawHorizon(mapArr[0]);
+                break;
+
+            case "left":
+                let oldHorizonLeft = [];
+                for (let x = 0; x < mapArr.length; x++) {
+                    oldHorizonLeft.push(mapArr[x][0]);
+                }
+                let newHorizonLeft = drawHorizon(oldHorizonLeft);
+                for (let x = 0; x < mapArr.length; x++) {
+                    mapArr[x].unshift(newHorizonLeft[x]);
+                    mapArr[x].pop();
+                }
+                break;
+
+            case "right":
+                let oldHorizonRight = [];
+                for (let x = 0; x < mapArr.length; x++) {
+                    oldHorizonRight.push(mapArr[x][mapArr.length-1]);
+                }
+                let newHorizonRight = drawHorizon(oldHorizonRight);
+                for (let x = 0; x < mapArr.length; x++) {
+                    mapArr[x].push(newHorizonRight[x]);
+                    mapArr[x].shift();
+                }
+                break;
+
+                case "down":
+                    for (let x = 0; x < mapArr.length-1; x++) {
+                        mapArr[x] = mapArr[x+1];
+                }
+                mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
+                break;
+        }
+        drawMap();
+        applyTerrainEffects();
+        addTime();
+    }
 }
 
 root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
@@ -264,32 +266,30 @@ actionBtn.addEventListener("click", function() {toggleActionPrompt()});
 closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
 
 // Move player using WASD, arrow keys, or dpad unless action prompt is open:
-if (actionPromptModal.style.display == "") {
-    window.addEventListener("keydown", function(event) {
-        if (event.defaultPrevented) {
-            return; // Do nothing if event already handled
-        }
-        switch (event.code) {
-            case "KeyW":
-            case "ArrowUp":
-                movePlayer("up");
-                break;
-            case "KeyA":
-            case "ArrowLeft":
-                movePlayer("left");
-                break;
-            case "KeyD":
-            case "ArrowRight":
-                movePlayer("right");
-                break;
-            case "KeyS":
-            case "ArrowDown":
-                movePlayer("down");
-                break;
-        }
-    });
-    dPadUp.addEventListener("click", function() {movePlayer("up")});
-    dPadLeft.addEventListener("click", function() {movePlayer("left")});
-    dPadRight.addEventListener("click", function() {movePlayer("right")});
-    dPadDown.addEventListener("click", function() {movePlayer("down")});
-}
+window.addEventListener("keydown", function(event) {
+    if (event.defaultPrevented) {
+        return; // Do nothing if event already handled
+    }
+    switch (event.code) {
+        case "KeyW":
+        case "ArrowUp":
+            movePlayer("up");
+            break;
+        case "KeyA":
+        case "ArrowLeft":
+            movePlayer("left");
+            break;
+        case "KeyD":
+        case "ArrowRight":
+            movePlayer("right");
+            break;
+        case "KeyS":
+        case "ArrowDown":
+            movePlayer("down");
+            break;
+    }
+});
+dPadUp.addEventListener("click", function() {movePlayer("up")});
+dPadLeft.addEventListener("click", function() {movePlayer("left")});
+dPadRight.addEventListener("click", function() {movePlayer("right")});
+dPadDown.addEventListener("click", function() {movePlayer("down")});
