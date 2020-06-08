@@ -13,7 +13,17 @@
             <p class="sub-heading">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. How long can you survive?</p>
         </div>
 
-        <div id="map">
+        
+
+        <div id="map-wrapper">
+            <div id="action-prompt-modal">
+                <div id="action-prompt-box">
+                    <span id="close-action-prompt">&times;</span>
+                    <p>What would you like to do?</p>
+                </div>
+            </div>
+            <div id="map">
+            </div>
         </div>
 
         <div id="stats-dpad">
@@ -26,6 +36,7 @@
                 <div id="dpad">
                     <div id="dpad-up"><img src="img/arrow.png" alt="Up arrow"></div>
                     <div id="dpad-left"><img src="img/arrow.png" alt="Left arrow"></div>
+                    <div id="action-button">A</div>
                     <div id="dpad-right"><img src="img/arrow.png" alt="Right arrow"></div>
                     <div id="dpad-down"><img src="img/arrow.png" alt="Down arrow"></div>
                 </div>

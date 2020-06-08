@@ -18,6 +18,10 @@ const dPadUp = document.getElementById("dpad-up");
 const dPadLeft = document.getElementById("dpad-left");
 const dPadRight = document.getElementById("dpad-right");
 const dPadDown = document.getElementById("dpad-down");
+const actionBtn = document.getElementById("action-button");
+
+const actionPromptModal = document.getElementById("action-prompt-modal");
+const closeActionPrompt = document.getElementById("close-action-prompt");
 
 function getRandTerrain() {
     return terrain[Math.floor(Math.random() * terrain.length)];
@@ -239,6 +243,10 @@ function movePlayer(direction) {
     addTime();
 }
 
+function toggleActionPrompt() {
+    actionPromptModal.style.display = (actionPromptModal.style.display === "block" ? "" : "block");
+}
+
 root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
 
 createArray(numRowsAndColumns);
@@ -247,31 +255,41 @@ populateMap();
 drawMap();
 
 
-// Capture input and move player:
-window.addEventListener("keydown", function(event) {
-    if (event.defaultPrevented) {
-        return; // Do nothing if event already handled
-    }
-    switch (event.code) {
-        case "KeyW":
-        case "ArrowUp":
-            movePlayer("up");
-            break;
-        case "KeyA":
-        case "ArrowLeft":
-            movePlayer("left");
-            break;
-        case "KeyD":
-        case "ArrowRight":
-            movePlayer("right");
-            break;
-        case "KeyS":
-        case "ArrowDown":
-            movePlayer("down");
-            break;
-    }
-});
-dPadUp.addEventListener("click", function() {movePlayer("up")});
-dPadLeft.addEventListener("click", function() {movePlayer("left")});
-dPadRight.addEventListener("click", function() {movePlayer("right")});
-dPadDown.addEventListener("click", function() {movePlayer("down")});
+// Toggle action prompt if space is pressed:
+window.addEventListener("keydown", function(event) {if (event.code === "Space") toggleActionPrompt()});
+actionBtn.addEventListener("click", function() {toggleActionPrompt()});
+
+
+// Close action prompt if exit button is pressed:
+closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
+
+// Move player using WASD, arrow keys, or dpad unless action prompt is open:
+if (actionPromptModal.style.display == "") {
+    window.addEventListener("keydown", function(event) {
+        if (event.defaultPrevented) {
+            return; // Do nothing if event already handled
+        }
+        switch (event.code) {
+            case "KeyW":
+            case "ArrowUp":
+                movePlayer("up");
+                break;
+            case "KeyA":
+            case "ArrowLeft":
+                movePlayer("left");
+                break;
+            case "KeyD":
+            case "ArrowRight":
+                movePlayer("right");
+                break;
+            case "KeyS":
+            case "ArrowDown":
+                movePlayer("down");
+                break;
+        }
+    });
+    dPadUp.addEventListener("click", function() {movePlayer("up")});
+    dPadLeft.addEventListener("click", function() {movePlayer("left")});
+    dPadRight.addEventListener("click", function() {movePlayer("right")});
+    dPadDown.addEventListener("click", function() {movePlayer("down")});
+}

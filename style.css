@@ -37,6 +37,11 @@ main {
     margin-top: .4em;
 }
 
+#map-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
 #map {
     padding: 0;
     width: 100%;
@@ -141,6 +146,49 @@ main {
     cursor: pointer;
 }
 
+/* Action prompt ---------------------------- */
+
+#map-wrapper {
+    position: relative;
+}
+
+#action-prompt-modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+#action-prompt-box {
+    width: 70%;
+    margin: 10% auto;
+    height: 80%;
+    padding: 10px;
+    border: 3px solid black;
+    background-color: lightgrey;
+    border-radius: 5px;
+}
+
+#close-action-prompt {
+    float: right;
+    font-size: 40px;
+    font-weight: bold;
+    opacity: 0.6;
+}
+
+#close-action-prompt:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#close-action-prompt:active {
+    opacity: 0.2;
+}
+
 /* Dpad styles ---------------------------- */
 
 #dpad {
@@ -151,6 +199,43 @@ main {
     grid-template-rows: repeat(3, 1fr);
 }
 
+#dpad-up {
+    grid-column: 2 / 3;
+    transform: rotate(270deg);
+}
+
+#dpad-left {
+    grid-row: 2 / 3;
+    transform: rotate(180deg);
+}
+
+#action-button {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    border: solid 8px rgba(0, 0, 0, 0.6);
+    border-radius: 100%;
+    overflow: hidden;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2em;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+#dpad-right {
+    grid-row: 2 / 3;
+    grid-column: 3 / 4;
+}
+
+#dpad-down {
+    grid-row: 3 / 4;
+    grid-column: 2 / 3;
+    transform: rotate(90deg);
+}
 
 #dpad div img {
     display: block;
@@ -166,29 +251,15 @@ main {
     opacity: 1;
 }
 
-#dpad div img:active {
+#action-button:hover {
+    cursor: pointer;
+    color: black;
+    border-color: black;
+}
+
+#dpad div img:active,
+#action-button:active {
     opacity: .2;
-}
-
-#dpad-up {
-    grid-column: 2 / 3;
-    transform: rotate(270deg);
-}
-
-#dpad-left {
-    grid-row: 2 / 3;
-    transform: rotate(180deg);
-}
-
-#dpad-right {
-    grid-row: 2 / 3;
-    grid-column: 3 / 4;
-}
-
-#dpad-down {
-    grid-row: 3 / 4;
-    grid-column: 2 / 3;
-    transform: rotate(90deg);
 }
 
 /* Media Queries ---------------------------- */
@@ -206,7 +277,7 @@ main {
         grid-template-rows: 1fr 500px; 
     }
 
-    #map,
+    #map-wrapper,
     #stats-dpad {
         grid-row: 2 / 3;
     }
@@ -232,12 +303,18 @@ main {
         height: 200px;
     }
 
+    #action-button {
+        font-weight: 800;
+        font-size: 1.3em;
+        border-width: 11px;
+    }
+
     #turn-counter {
         text-align: left;
     }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1150px) {
     main {
         grid-template-columns: 700px 1fr;
         grid-template-rows: 1fr 700px; 
@@ -250,5 +327,11 @@ main {
     #dpad {
         width: 300px;
         height: 300px;
+    }
+
+    #action-button {
+        font-weight: 900;
+        font-size: 1.9em;
+        border-width: 14px;
     }
 }
