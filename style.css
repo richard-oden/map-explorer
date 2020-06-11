@@ -10,9 +10,12 @@
 
 /* Page styles ---------------------------- */
 
-body {
+body,
+button {
     font-family: 'Montserrat', sans-serif;
+}
 
+body {
     margin: 0;
     display: flex;
     justify-content: center;
@@ -141,11 +144,6 @@ main {
     background-image: url("img/player.png");
 }
 
-#map div:hover {
-    border: 3px solid darkred;
-    cursor: pointer;
-}
-
 /* Action prompt ---------------------------- */
 
 #map-wrapper {
@@ -171,22 +169,47 @@ main {
     border: 3px solid black;
     background-color: lightgrey;
     border-radius: 5px;
+    font-size: 1.5em;
+
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: auto;
+}
+
+#action-prompt-heading {
+    grid-column: 1 / 3;
+    display: flex;
+    justify-content: space-between;
+}
+
+#action-prompt-heading h3 {
+    margin: 10px;
 }
 
 #close-action-prompt {
-    float: right;
-    font-size: 40px;
+    font-size: 50px;
     font-weight: bold;
-    opacity: 0.6;
 }
 
-#close-action-prompt:hover {
-  opacity: 1;
-  cursor: pointer;
+#action-prompt-box label {
+    max-height: 100%;
+    max-width: 100%;
 }
 
-#close-action-prompt:active {
-    opacity: 0.2;
+#action-prompt-box label img {
+    object-fit: contain;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+#action-prompt-box button {
+    max-height: 100%;
+    max-width: 100%;
+    margin: 10px;
+    background-color: white;
+    border: solid black 3px;
+    border-radius: 5px;
+    font-size: 40px;
 }
 
 /* Dpad styles ---------------------------- */
@@ -217,13 +240,13 @@ main {
     flex-direction: column;
     justify-content: center;
 
-    border: solid 8px rgba(0, 0, 0, 0.6);
+    color: black;
+    border: solid 8px black;
     border-radius: 100%;
     overflow: hidden;
     text-align: center;
     font-weight: 700;
     font-size: 1.2em;
-    color: rgba(0, 0, 0, 0.6);
 }
 
 #dpad-right {
@@ -243,23 +266,21 @@ main {
     object-fit: contain;
     max-width: 100%;
     max-height: 100%;
+}
+
+/* Pseudoclasses ---------------------------- */
+
+.interactable {
     opacity: 0.6;
 }
 
-#dpad div img:hover {
-    cursor: pointer;
+.interactable:hover {
     opacity: 1;
-}
-
-#action-button:hover {
     cursor: pointer;
-    color: black;
-    border-color: black;
 }
 
-#dpad div img:active,
-#action-button:active {
-    opacity: .2;
+.interactable:active {
+    opacity: 0.2;
 }
 
 /* Media Queries ---------------------------- */

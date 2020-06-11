@@ -158,19 +158,19 @@ function applyTerrainEffects() {
     player = document.querySelector("img.player");
     switch (player.parentElement.className) {
         case "plains":
-            changePlayerMeters(-1, -2, -3);
+            changePlayerMeters(0, -1, -2);
         break;
         case "forest":
-            changePlayerMeters(-2, -2, -3);
+            changePlayerMeters(0, -1, -2);
         break;
         case "desert":
-            changePlayerMeters(-1, -2, -5);
+            changePlayerMeters(0, -1, -5);
         break;
         case "mountain":
-            changePlayerMeters(-3, -2, -3);
+            changePlayerMeters(0, -2, -2);
         break;
         case "water":
-            changePlayerMeters(-5, -2, -1);
+            changePlayerMeters(0, -2, -1);
         break;
     }
 }

@@ -18,8 +18,16 @@
         <div id="map-wrapper">
             <div id="action-prompt-modal">
                 <div id="action-prompt-box">
-                    <span id="close-action-prompt">&times;</span>
-                    <p>What would you like to do?</p>
+                    <div id="action-prompt-heading">
+                        <h3>Select an action:</h3>
+                        <span id="close-action-prompt" class="interactable">&times;</span>
+                    </div>
+                    <label for="search"><img src="img/search.png" alt="Search"></label>
+                    <button id="search" class="interactable" type="button">Search</button>
+                    <label for="attack"><img src="img/attack.png" alt="Attack"></label>
+                    <button id="attack" class="interactable" type="button">Attack</button>
+                    <label for="sleep"><img src="img/sleep.png" alt="Sleep"></label>
+                    <button id="sleep" class="interactable" type="button">Sleep</button>
                 </div>
             </div>
             <div id="map">
@@ -34,11 +42,11 @@
             </ul>
             <div id="dpad-wrapper">
                 <div id="dpad">
-                    <div id="dpad-up"><img src="img/arrow.png" alt="Up arrow"></div>
-                    <div id="dpad-left"><img src="img/arrow.png" alt="Left arrow"></div>
-                    <div id="action-button">A</div>
-                    <div id="dpad-right"><img src="img/arrow.png" alt="Right arrow"></div>
-                    <div id="dpad-down"><img src="img/arrow.png" alt="Down arrow"></div>
+                    <div id="dpad-up"><img class="interactable" src="img/arrow.png" alt="Up arrow"></div>
+                    <div id="dpad-left"><img class="interactable" src="img/arrow.png" alt="Left arrow"></div>
+                    <div id="action-button" class="interactable">A</div>
+                    <div id="dpad-right"><img class="interactable" src="img/arrow.png" alt="Right arrow"></div>
+                    <div id="dpad-down"><img class="interactable" src="img/arrow.png" alt="Down arrow"></div>
                 </div>
             </div>
             <div id="turn-counter">
