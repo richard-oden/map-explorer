@@ -23,12 +23,16 @@ const actionBtn = document.getElementById("action-button");
 const actionPromptModal = document.getElementById("action-prompt-modal");
 const closeActionPrompt = document.getElementById("close-action-prompt");
 
-function getRandTerrain() {
-    return terrain[Math.floor(Math.random() * terrain.length)];
+function getRandArrItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function nthWord(string, n) {
     return string.split(' ')[n-1];
+}
+
+function numWords(string) {
+    return string.split(' ').length;
 }
 
 function isCenter(arr2d, x, y) {
@@ -44,46 +48,52 @@ function print(message) {
     mapContainer.innerHTML = message;
 }
 
+// Check if given vector is within the map's boundaries:
 function inBounds(arr2d, x, y) {
-    if ( (x > 0 && y > 0) && (x < arr2d.length-1 && y < arr2d[x].length-1) ) return true;
+    if ( (x >= 0 && y >= 0) && (x <= arr2d.length-1 && y <= arr2d[x].length-1) ) return true;
 }
 
+// Create random 2D array to hold terrain values:
 function createArray(length) {
     for (let x = 0; x < length; x++) {
         mapArr[x] = []
         for (let y = 0; y < length; y++) {
-            mapArr[x][y] = getRandTerrain();
+            mapArr[x][y] = getRandArrItem(terrain);
         }
     }
 }
 
+// Make some vectors of array equal to adjacent vectors to create larger chunks of terrain:
 function createChunks() {
     for (let x = 0; x < mapArr.length; x++) {
         for (let y = 0; y < mapArr.length; y++) {
+            // Create array of all adjacent terrain in bounds:
             let adjTerrain = [];
             for (let v = 0; v < 8; v++) {
                 xo = x + adjVectors[v][0];
                 yo = y + adjVectors[v][1];
                 if (inBounds(mapArr, xo, yo)) adjTerrain.push(mapArr[xo][yo]);
             }
-            mapArr[x][y] = adjTerrain[Math.floor(Math.random() * adjTerrain.length)];
+            // Randomly select adjacent terrain to copy:
+            mapArr[x][y] = getRandArrItem(adjTerrain);
         }
     }
 }
 
-function createEntities(cell) {
-    if (cell === "plains" && chance(4)) {
-        cell += " snake";
-    } else if (cell === "forest" && chance(4)) {
-        cell += " bear";
-    } else if (cell === "desert" && chance(4)) {
-        cell += " scorpion";
-    } else if (cell === "mountain" && chance(4)) {
+// Add entities to vectors based on terrain if they succeed 4% chance:
+function createEntities(vector) {
+    if (vector === "plains" && chance(4)) {
+        vector += " snake";
+    } else if (vector === "forest" && chance(4)) {
+        vector += " bear";
+    } else if (vector === "desert" && chance(4)) {
+        vector += " scorpion";
+    } else if (vector === "mountain" && chance(4)) {
 
-    } else if (cell === "water" && chance(4)) {
-        cell += " shark";
+    } else if (vector === "water" && chance(4)) {
+        vector += " shark";
     }
-    return cell;
+    return vector;
 }
 
 function populateMap() {
@@ -95,16 +105,19 @@ function populateMap() {
 }
 
 function drawMap() {
-    // Draw terrain:
     let html = '';
     for (let x = 0; x < mapArr.length; x++) {
         for (let y = 0; y < mapArr[x].length; y++) {
+            // Apply class to element to indicate terrain:
             html += `<div class="${mapArr[x][y]}">`;
+                // Draw entities (second word of each mapArr item):
                 entity = nthWord(mapArr[x][y], 2);
-                if (entity !== undefined) {
-                   html += `<img class="${entity}" src="img/${entity}.png" alt="${entity}">`;
-                } else if (isCenter(mapArr, x, y)) {
-                   html += `<img class="player" src="img/player.png" alt="player">`;
+                // Add player image if center of map:
+                if (isCenter(mapArr, x, y)) {
+                    html += `<img class="player" src="img/player.png" alt="player">`;
+                // Add entity image if contains an entity (second word):
+                } else if (entity !== undefined) {
+                    html += `<img class="${entity}" src="img/${entity}.png" alt="${entity}">`;
                 }
             html += `</div>`;
         }
@@ -112,21 +125,24 @@ function drawMap() {
     print(html);
 }
 
+// Create new edge of map:
 function drawHorizon(previousHorizon) {
     let newHorizon = [];
     previousHorizon.forEach(item => {
         index = previousHorizon.indexOf(item);
+        // Copy terrain (first word) from previous horizon's item or adjacent item if in bounds and succeeds percentage chance:
         if (index === 0) {
             if (chance(75)) {
                 newHorizon.push(nthWord(chance(50) ? previousHorizon[index] : previousHorizon[index+1], 1));
             } else {
-                newHorizon.push(getRandTerrain());
+                // Otherwise generate random terrain:
+                newHorizon.push(getRandArrItem(terrain));
             }
         } else if (index === previousHorizon.length-1) {
             if (chance(75)) {
                 newHorizon.push(nthWord(chance(50) ? previousHorizon[index] : previousHorizon[index-1], 1));
             } else {
-                newHorizon.push(getRandTerrain());
+                newHorizon.push(getRandArrItem(terrain));
             }
         } else {
             if (chance(75)) {
@@ -138,10 +154,12 @@ function drawHorizon(previousHorizon) {
                     newHorizon.push(nthWord(previousHorizon[index], 1));
                 }
             } else {
-                newHorizon.push(getRandTerrain());
+                newHorizon.push(getRandArrItem(terrain));
             }
         }
     });
+
+    // Add entities to new horizon:
      for (let i = 0; i < newHorizon.length; i++) {
          newHorizon[i] = createEntities(newHorizon[i]);
      }
@@ -154,6 +172,7 @@ function changePlayerMeters(energy, hunger, thirst) {
     playerThirst.innerHTML = parseInt(playerThirst.innerHTML) + thirst;
 }
 
+// Deplete player meters depending on terrain:
 function applyTerrainEffects() {
     player = document.querySelector("img.player");
     switch (player.parentElement.className) {
@@ -175,23 +194,66 @@ function applyTerrainEffects() {
     }
 }
 
+
+// Move entities randomly:
+function moveEntities() {
+    // Iterate through all vectors in map array:
+    for (let x = 0; x < mapArr.length; x++) {
+        for (let y = 0; y < mapArr[x].length; y++) {
+            // Check if vector has an entity and succeeds 50% chance:
+            if (numWords(mapArr[x][y]) === 2 && chance(50)) {
+                // Create list of possible adjacent vectors to move entity:
+                let possibleDestinations = [];
+                for (let v = 0; v < 8; v++) {
+                    xo = x + adjVectors[v][0];
+                    yo = y + adjVectors[v][1];
+                    // Check if adjacent vectors are in bounds and have same terrain as current vector:
+                    if (inBounds(mapArr, xo, yo) && mapArr[xo][yo] === nthWord(mapArr[x][y], 1)) {
+                            possibleDestinations.push(adjVectors[v]);
+                        }
+                    }
+                // If no possible destinations, do nothing:
+                if (possibleDestinations.length !== 0) {
+                    let destination;
+                    if (possibleDestinations.length === 1) {
+                        destination = possibleDestinations[0];
+                    } else {
+                        destination = getRandArrItem(possibleDestinations);
+                    }
+                    xo = x + destination[0];
+                    yo = y + destination[1];
+                    // Give destination same entity as current vector:
+                    mapArr[xo][yo] += ' ' + nthWord(mapArr[x][y], 2);
+                    // Remove entity from current vector:
+                    mapArr[x][y] = nthWord(mapArr[x][y], 1);
+                }
+            }
+        }
+    }
+}
+
+// Increment time whenever player moves. Each move is considered 30 mins:
 function addTime() {
     move++;
+    // Set minutes to 30 on odd moves:
     if (move%2 != 0) {
         min.innerHTML = "30";
     } else {
+        // On even moves, add one hour:
         newHr = parseInt(hr.innerHTML) + 1;
+        // Change am to pm and vice versa if 12th hour:
         if (newHr === 12) {
             amPM.innerHTML = (amPM.innerHTML === "am" ? "pm" : "am");
             hr.innerHTML = newHr;
+        // Reset hours to 1 after 12:
         } else if (newHr > 12) {
             hr.innerHTML = 1;
         } else {
             hr.innerHTML = newHr;
         }
-
         min.innerHTML = "00";
 
+        // If 48 moves (24 hours) have occured, add one day:
         if (move%48 == 0) {
             day.innerHTML = parseInt(day.innerHTML) + 1;
         }
@@ -203,6 +265,7 @@ function toggleActionPrompt() {
 }
 
 function movePlayer(direction) {
+    // Don't move player if action prompt is displayed:
     if (actionPromptModal.style.display === "") {
         switch (direction) {
             case "up":
@@ -243,6 +306,7 @@ function movePlayer(direction) {
                 mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
                 break;
         }
+        moveEntities();
         drawMap();
         applyTerrainEffects();
         addTime();
