@@ -13,8 +13,6 @@
             <p class="sub-heading">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. How long can you survive?</p>
         </div>
 
-        
-
         <div id="map-wrapper">
             <div id="action-prompt-modal">
                 <div id="action-prompt-box">
@@ -22,12 +20,31 @@
                         <h3>Select an action:</h3>
                         <span id="close-action-prompt" class="interactable">&times;</span>
                     </div>
-                    <label for="search"><img src="img/search.png" alt="Search"></label>
-                    <button id="search" class="interactable" type="button">Search</button>
-                    <label for="attack"><img src="img/attack.png" alt="Attack"></label>
-                    <button id="attack" class="interactable" type="button">Attack</button>
-                    <label for="sleep"><img src="img/sleep.png" alt="Sleep"></label>
-                    <button id="sleep" class="interactable" type="button">Sleep</button>
+                    <label class="interactable" for="search"><img src="img/search.png" alt="Search"></label>
+                    <div class="btn-wrapper">
+                        <button id="search" class="interactable" type="button">Search</button>
+                        <div class="btn-drawer">
+                            <img class="back-btn interactable" src="img/arrow.png" alt="Back">
+                            <div class="preview"></div>
+                        </div>
+                    </div>
+                    <label class="interactable" for="attack"><img src="img/attack.png" alt="Attack"></label>
+                    <div class="btn-wrapper">
+                        <button id="attack" class="interactable" type="button">Attack</button>
+                        <div class="btn-drawer">
+                            <img class="back-btn interactable" src="img/arrow.png" alt="Back">
+                            <div class="preview"></div>
+                        </div>
+                    </div>
+                    <label class="interactable" for="sleep"><img src="img/sleep.png" alt="Sleep"></label>
+                    <div class="btn-wrapper">
+                        <button id="sleep" class="interactable" type="button">Sleep</button>
+                        <div class="btn-drawer">
+                            <img class="back-btn interactable" src="img/arrow.png" alt="Back">
+                            <input id="sleep-hr" class="interactable" type="text" value="1">
+                            <span>hr(s)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="map">

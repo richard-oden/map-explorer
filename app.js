@@ -4,7 +4,8 @@ let mapArr = [];
 let numRowsAndColumns = 21;
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let player;
-let adjVectors = [ [0, -1], [0, 1], [-1, 0], [-1, -1], [-1, 1], [1, 0], [1, -1], [1, 1] ];
+let adjVectors = [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ];
+
 let move = 12;
 let day = document.getElementById("day");
 let hr = document.getElementById("hr");
@@ -22,6 +23,17 @@ const actionBtn = document.getElementById("action-button");
 
 const actionPromptModal = document.getElementById("action-prompt-modal");
 const closeActionPrompt = document.getElementById("close-action-prompt");
+const searchBtn = document.getElementById("search");
+const searchDrawer = document.querySelectorAll(".btn-drawer")[0];
+const searchBack = document.querySelectorAll(".back-btn")[0];
+const searchPreview = document.querySelectorAll(".preview")[0];
+const attackBtn = document.getElementById("attack");
+const attackDrawer = document.querySelectorAll(".btn-drawer")[1];
+const attackBack = document.querySelectorAll(".back-btn")[1];
+const attackPreview = document.querySelectorAll(".preview")[1];
+const sleepBtn = document.getElementById("sleep");
+const sleepDrawer = document.querySelectorAll(".btn-drawer")[2];
+const sleepBack = document.querySelectorAll(".back-btn")[2];
 
 function getRandArrItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -46,6 +58,12 @@ function chance(percent) {
 
 function print(message) {
     mapContainer.innerHTML = message;
+}
+
+function addEventListenerList(list, event, fn) {
+    for (var i = 0, len = list.length; i < len; i++) {
+        list[i].addEventListener(event, fn, false);
+    }
 }
 
 // Check if given vector is within the map's boundaries:
@@ -261,7 +279,37 @@ function addTime() {
 }
 
 function toggleActionPrompt() {
-    actionPromptModal.style.display = (actionPromptModal.style.display === "block" ? "" : "block");
+    if (actionPromptModal.style.display === "block") {
+        actionPromptModal.style.display = "";
+    } else {
+        actionPromptModal.style.display = "block";
+        printPlayerAdjVectors(searchPreview);
+        printPlayerAdjVectors(attackPreview);
+    }
+}
+
+function toggleDrawer(drawer) {
+    drawer.style.transform = (drawer.style.transform === "translateX(0px)" ? "translateX(100%)" : "translateX(0px)");
+}
+
+function printPlayerAdjVectors(element) {
+    for (let x = 0; x < mapArr.length; x++) {
+        for (let y = 0; y < mapArr[x].length; y++) {
+            if (isCenter(mapArr, x, y)) {
+                html = "";
+                html += `<div class="${nthWord(mapArr[x][y], 1)} player"><img class="player" src="img/player.png" alt="player"></div>`
+                for (let v = 0; v < 8; v++) {
+                    xo = x + adjVectors[v][0];
+                    yo = y + adjVectors[v][1];
+                    let terrain = nthWord(mapArr[xo][yo], 1);
+                    let entity = nthWord(mapArr[xo][yo], 2);
+                    html += `<div class="${terrain}">`
+                    html += (entity !== undefined ? `<img class="${entity}" src="img/${entity}.png" alt="${entity}"></div>` : `</div>`); 
+                }
+            }
+        }
+    }
+    element.innerHTML = html;
 }
 
 function movePlayer(direction) {
@@ -320,15 +368,6 @@ createChunks();
 populateMap();
 drawMap();
 
-
-// Toggle action prompt if space is pressed:
-window.addEventListener("keydown", function(event) {if (event.code === "Space") toggleActionPrompt()});
-actionBtn.addEventListener("click", function() {toggleActionPrompt()});
-
-
-// Close action prompt if exit button is pressed:
-closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
-
 // Move player using WASD, arrow keys, or dpad unless action prompt is open:
 window.addEventListener("keydown", function(event) {
     if (event.defaultPrevented) {
@@ -357,3 +396,18 @@ dPadUp.addEventListener("click", function() {movePlayer("up")});
 dPadLeft.addEventListener("click", function() {movePlayer("left")});
 dPadRight.addEventListener("click", function() {movePlayer("right")});
 dPadDown.addEventListener("click", function() {movePlayer("down")});
+
+// Toggle action prompt if space is pressed:
+window.addEventListener("keydown", function(event) {if (event.code === "Space") toggleActionPrompt()});
+actionBtn.addEventListener("click", function() {toggleActionPrompt()});
+
+// Close action prompt if exit button is pressed:
+closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
+
+// Open drawers when action prompt buttons are pressed:
+searchBtn.addEventListener("click", function() {toggleDrawer(searchDrawer)});
+searchBack.addEventListener("click", function() {toggleDrawer(searchDrawer)});
+attackBtn.addEventListener("click", function() {toggleDrawer(attackDrawer)});
+attackBack.addEventListener("click", function() {toggleDrawer(attackDrawer)});
+sleepBtn.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
+sleepBack.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
