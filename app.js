@@ -27,10 +27,12 @@ const searchBtn = document.getElementById("search");
 const searchDrawer = document.querySelectorAll(".btn-drawer")[0];
 const searchBack = document.querySelectorAll(".back-btn")[0];
 const searchPreview = document.querySelectorAll(".preview")[0];
+const searchTargets = searchPreview.children;
 const attackBtn = document.getElementById("attack");
 const attackDrawer = document.querySelectorAll(".btn-drawer")[1];
 const attackBack = document.querySelectorAll(".back-btn")[1];
 const attackPreview = document.querySelectorAll(".preview")[1];
+const attackTargets = attackPreview.children;
 const sleepBtn = document.getElementById("sleep");
 const sleepDrawer = document.querySelectorAll(".btn-drawer")[2];
 const sleepBack = document.querySelectorAll(".back-btn")[2];
@@ -61,9 +63,7 @@ function print(message) {
 }
 
 function addEventListenerList(list, event, fn) {
-    for (var i = 0, len = list.length; i < len; i++) {
-        list[i].addEventListener(event, fn, false);
-    }
+    for (let el of list) el.addEventListener(event, fn, false);
 }
 
 // Check if given vector is within the map's boundaries:
@@ -112,6 +112,12 @@ function createEntities(vector) {
         vector += " shark";
     }
     return vector;
+}
+
+// When entity dies, change color to red and replace image with gravestone:
+function die(entity) {
+    entity.style.filter = 'hue-rotate(300deg)';
+    setTimeout(function(){entity.src = 'img/dead.png'}, 1000);
 }
 
 function populateMap() {
@@ -192,7 +198,7 @@ function changePlayerMeters(energy, hunger, thirst) {
 
 // Deplete player meters depending on terrain:
 function applyTerrainEffects() {
-    player = document.querySelector("img.player");
+    const player = document.querySelector("#map div img.player");
     switch (player.parentElement.className) {
         case "plains":
             changePlayerMeters(0, -1, -2);
@@ -250,31 +256,25 @@ function moveEntities() {
     }
 }
 
-// Increment time whenever player moves. Each move is considered 30 mins:
-function addTime() {
-    move++;
-    // Set minutes to 30 on odd moves:
-    if (move%2 != 0) {
-        min.innerHTML = "30";
-    } else {
-        // On even moves, add one hour:
-        newHr = parseInt(hr.innerHTML) + 1;
-        // Change am to pm and vice versa if 12th hour:
-        if (newHr === 12) {
-            amPM.innerHTML = (amPM.innerHTML === "am" ? "pm" : "am");
-            hr.innerHTML = newHr;
-        // Reset hours to 1 after 12:
-        } else if (newHr > 12) {
-            hr.innerHTML = 1;
-        } else {
-            hr.innerHTML = newHr;
-        }
-        min.innerHTML = "00";
-
-        // If 48 moves (24 hours) have occured, add one day:
-        if (move%48 == 0) {
-            day.innerHTML = parseInt(day.innerHTML) + 1;
-        }
+// Increment time for each move. Each move is considered 30 mins:
+function addTime(numMoves) {
+    move += numMoves;
+    for (let m = 0; m < numMoves; m++) {
+        min.innerHTML = parseInt(min.innerHTML) + 30;
+        if (parseInt(min.innerHTML) === 60) {
+            min.innerHTML = "00";
+            hr.innerHTML = parseInt(hr.innerHTML) + 1;
+            if (parseInt(hr.innerHTML) === 12) {
+                if (amPM.innerHTML === "am") {
+                    amPM.innerHTML = "pm";
+                } else {
+                    amPM.innerHTML = "am";
+                    day.innerHTML = parseInt(day.innerHTML) + 1;
+                }
+            } else if (parseInt(hr.innerHTML) > 12) {
+                hr.innerHTML = "1";
+            }
+        };
     }
 }
 
@@ -285,6 +285,7 @@ function toggleActionPrompt() {
         actionPromptModal.style.display = "block";
         printPlayerAdjVectors(searchPreview);
         printPlayerAdjVectors(attackPreview);
+        addEventListenerList(attackTargets, 'click', attack);
     }
 }
 
@@ -310,6 +311,24 @@ function printPlayerAdjVectors(element) {
         }
     }
     element.innerHTML = html;
+}
+
+function search(div) {
+
+}
+
+function attack(event) {
+    const attackTarget = event.target;
+    if (attackTarget.tagName === 'IMG' && attackTarget.className != 'player') {
+        if (chance(50)) die(attackTarget);
+    } else {
+        console.log('No one here!');
+    }
+}
+
+function sleep(hr) {
+    addTime(hr*2);
+    changePlayerMeters(2.5*hr, Math.floor(-0.5*hr), hr);
 }
 
 function movePlayer(direction) {
@@ -357,7 +376,7 @@ function movePlayer(direction) {
         moveEntities();
         drawMap();
         applyTerrainEffects();
-        addTime();
+        addTime(1);
     }
 }
 
