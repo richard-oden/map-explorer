@@ -216,7 +216,8 @@ main {
     overflow: hidden;
 }
 
-.btn-drawer {
+.preview-drawer,
+.loot-drawer {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -238,7 +239,8 @@ main {
     align-items: center;
 }
 
-.back-btn {
+.preview-back-btn,
+.loot-back-btn {
     object-fit: contain;
     max-height: 100%;
     flex: 1;

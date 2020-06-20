@@ -23,19 +23,198 @@ const actionBtn = document.getElementById("action-button");
 
 const actionPromptModal = document.getElementById("action-prompt-modal");
 const closeActionPrompt = document.getElementById("close-action-prompt");
+
 const searchBtn = document.getElementById("search");
-const searchDrawer = document.querySelectorAll(".btn-drawer")[0];
-const searchBack = document.querySelectorAll(".back-btn")[0];
+const searchPreviewDrawer = document.querySelectorAll(".preview-drawer")[0];
+const searchPreviewBack = document.querySelectorAll(".preview-back-btn")[0];
 const searchPreview = document.querySelectorAll(".preview")[0];
 const searchTargets = searchPreview.children;
+const searchLootDrawer = document.querySelectorAll(".loot-drawer")[0];
+const searchLootBack = document.querySelectorAll(".loot-back-btn")[0];
+const searchLoot = document.querySelectorAll(".loot")[0];
+
 const attackBtn = document.getElementById("attack");
-const attackDrawer = document.querySelectorAll(".btn-drawer")[1];
-const attackBack = document.querySelectorAll(".back-btn")[1];
+const attackPreviewDrawer = document.querySelectorAll(".preview-drawer")[1];
+const attackPreviewBack = document.querySelectorAll(".preview-back-btn")[1];
 const attackPreview = document.querySelectorAll(".preview")[1];
 const attackTargets = attackPreview.children;
+const attackLootDrawer = document.querySelectorAll(".loot-drawer")[1];
+const attackLootBack = document.querySelectorAll(".loot-back-btn")[1];
+const attackLoot = document.querySelectorAll(".loot")[1];
+
 const sleepBtn = document.getElementById("sleep");
-const sleepDrawer = document.querySelectorAll(".btn-drawer")[2];
-const sleepBack = document.querySelectorAll(".back-btn")[2];
+const sleepDrawer = document.querySelectorAll(".preview-drawer")[2];
+const sleepBack = document.querySelectorAll(".preview-back-btn")[2];
+
+const searchLootTable = [
+    {
+        name: "edible berries",
+        terrain: "plains",
+        hunger: 2,
+        thirst: 1,
+        minNum: 5,
+        maxNum: 20,
+        rarity: 33,
+    },
+    {
+        name: "poisonous berries",
+        terrain: "plains",
+        hunger: -2,
+        thirst: -1,
+        energy: -2,
+        minNum: 5,
+        maxNum: 20,
+        rarity: 10,
+    },
+    {
+        name: "wild carrots",
+        terrain: "plains",
+        hunger: 4,
+        thirst: 1,
+        minNum: 3,
+        maxNum: 10,
+        rarity: 20,
+    },
+    {
+        name: "rabbits",
+        terrain: "plains",
+        hunger: 10,
+        thirst: 1,
+        minNum: 1,
+        maxNum: 2,
+        rarity: 5,
+    },
+    {
+        name: "edible mushrooms",
+        terrain: "forest",
+        hunger: 2,
+        thrist: 1,
+        minNum: 1,
+        maxNum: 10,
+        rarity: 20,
+    },
+    {
+        name: "squirrels",
+        terrain: "forest",
+        hunger: 10,
+        thirst: 1,
+        minNum: 1,
+        maxNum: 3,
+        rarity: 5,
+    },
+    {
+        name: "poisonous mushrooms",
+        terrain: "forest",
+        hunger: 2,
+        thirst: -1,
+        energy: -2,
+        minNum: 1,
+        maxNum: 10,
+        rarity: 20,
+    },
+    {
+        name: "wild greens",
+        terrain: "forest",
+        hunger: 1,
+        thirst: 1,
+        minNum: 10,
+        maxNum: 30,
+        rarity: 40,
+    },
+    {
+        name: "medicinal plants",
+        terrain: "forest",
+        hunger: 1,
+        thirst: 1,
+        energy: 5,
+        minNum: 3,
+        maxNum: 8,
+        rarity: 10,
+    },
+    {
+        name: "cactus fruit",
+        terrain: "desert",
+        hunger: 2,
+        thirst: 2,
+        minNum: 3,
+        maxNum: 15,
+        rarity: 25,
+    },
+    {
+        name: "coconuts",
+        terrain: "desert",
+        hunger: 3,
+        thirst: 5,
+        minNum: 2,
+        maxNum: 10,
+        rarity: 20,
+    },
+    {
+        name: "fish",
+        terrain: "water",
+        hunger: 10,
+        thirst: 1,
+        minNum: 1,
+        maxNum: 5,
+        rarity: 15,
+    },
+    {
+        name: "seaweed",
+        terrain: "water",
+        hunger: 1,
+        thirst: 1,
+        minNum: 10,
+        maxNum: 40,
+        rarity: 60,
+    },
+    {
+        name: "fresh water",
+        terrain: "water",
+        thirst: 10,
+        minNum: 1,
+        maxNum: 5,
+        rarity: 80,
+    },
+    {
+        name: "saltwater",
+        terrain: "water",
+        thirst: -10,
+        minNum: 1,
+        maxNum: 5,
+        rarity: 60,
+    }
+];
+
+const attackLootTable = [
+    {
+        name: "snake meat",
+        hunger: 8,
+        thirst: 1,
+        minNum: 1,
+        maxNum: 3,
+    },
+    {
+        name: "bear meat",
+        hunger: 15,
+        thirst: 1,
+        minNum: 3,
+        maxNum: 8,
+    },
+    {
+        name: "scorpion meat",
+        hunger: 5,
+        thirst: 1,
+        minNum: 1,
+        maxNum: 2,
+    },
+    {
+        name: "shark meat",
+        hunger: 12,
+        thirst: 1,
+        minNum: 3,
+        maxNum: 6,
+    },
+];
 
 function getRandArrItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -56,6 +235,10 @@ function isCenter(arr2d, x, y) {
 function chance(percent) {
     result = Math.floor(Math.random() * 100) + 1;
     if (result <= percent) return true;
+}
+
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function print(message) {
@@ -114,10 +297,9 @@ function createEntities(vector) {
     return vector;
 }
 
-// When entity dies, change color to red and replace image with gravestone:
+// When entity dies, replace image with gravestone:
 function die(entity) {
-    entity.style.filter = 'hue-rotate(300deg)';
-    setTimeout(function(){entity.src = 'img/dead.png'}, 1000);
+    entity.src = 'img/dead.png'
 }
 
 function populateMap() {
@@ -285,6 +467,7 @@ function toggleActionPrompt() {
         actionPromptModal.style.display = "block";
         printPlayerAdjVectors(searchPreview);
         printPlayerAdjVectors(attackPreview);
+        addEventListenerList(searchTargets, 'click', search);
         addEventListenerList(attackTargets, 'click', attack);
     }
 }
@@ -313,14 +496,39 @@ function printPlayerAdjVectors(element) {
     element.innerHTML = html;
 }
 
-function search(div) {
-
+function search(event) {
+    const searchTarget = event.target;
+    if (!searchTarget.classList.contains('searched')) {
+        toggleDrawer(searchLootDrawer);
+        searchLootTable.forEach(item => {
+            if (item.terrain === nthWord(searchTarget.className, 1) && chance(item.rarity)) {
+                const quantity = randomIntFromInterval(item.minNum, item.maxNum);
+                console.log(`You found ${item.name} (${quantity})!`);
+            } else {
+                console.log('Nothing here!');
+            }
+        });
+        searchTarget.classList.add("searched");
+        searchTarget.innerHTML = `<img class="search" src="img/search.png" alt="search"></div>`;
+    } else {
+        console.log("Already searched!");
+    } 
 }
 
 function attack(event) {
     const attackTarget = event.target;
     if (attackTarget.tagName === 'IMG' && attackTarget.className != 'player') {
-        if (chance(50)) die(attackTarget);
+        if (chance(50)) {
+            console.log('You won!')
+            die(attackTarget);
+            toggleDrawer(attackLootDrawer);
+            attackLootTable.forEach(item => {
+                if (nthWord(item.name, 1) === attackTarget.className) {
+                    const quantity = randomIntFromInterval(item.minNum, item.maxNum);
+                    console.log(`You found ${item.name} (${quantity})!`);
+                }
+            });
+        }
     } else {
         console.log('No one here!');
     }
@@ -424,9 +632,13 @@ actionBtn.addEventListener("click", function() {toggleActionPrompt()});
 closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
 
 // Open drawers when action prompt buttons are pressed:
-searchBtn.addEventListener("click", function() {toggleDrawer(searchDrawer)});
-searchBack.addEventListener("click", function() {toggleDrawer(searchDrawer)});
-attackBtn.addEventListener("click", function() {toggleDrawer(attackDrawer)});
-attackBack.addEventListener("click", function() {toggleDrawer(attackDrawer)});
+searchBtn.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
+searchPreviewBack.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
+searchLootBack.addEventListener("click", function() {toggleDrawer(searchLootDrawer)});
+
+attackBtn.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
+attackPreviewBack.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
+attackLootBack.addEventListener("click", function() {toggleDrawer(attackLootDrawer)});
+
 sleepBtn.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
 sleepBack.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
