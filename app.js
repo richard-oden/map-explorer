@@ -192,6 +192,7 @@ const attackLootTable = [
         thirst: 1,
         minNum: 1,
         maxNum: 3,
+        winChance: 65
     },
     {
         name: "bear meat",
@@ -199,6 +200,7 @@ const attackLootTable = [
         thirst: 1,
         minNum: 3,
         maxNum: 8,
+        winChance: 15
     },
     {
         name: "scorpion meat",
@@ -206,6 +208,7 @@ const attackLootTable = [
         thirst: 1,
         minNum: 1,
         maxNum: 2,
+        winChance: 90
     },
     {
         name: "shark meat",
@@ -213,6 +216,7 @@ const attackLootTable = [
         thirst: 1,
         minNum: 3,
         maxNum: 6,
+        winChance: 10
     },
 ];
 
@@ -230,6 +234,14 @@ function numWords(string) {
 
 function isCenter(arr2d, x, y) {
     if (x === Math.floor(arr2d.length / 2) && y === Math.floor(arr2d.length / 2)) return true;
+}
+
+function getCenter(arr2d) {
+    for (let x = 0; x < arr2d.length; x++) {
+        for (let y = 0; y < arr2d.length; y++) {
+            if (isCenter(arr2d, x, y)) return [x, y];
+        }
+    }
 }
 
 function chance(percent) {
@@ -297,9 +309,11 @@ function createEntities(vector) {
     return vector;
 }
 
-// When entity dies, replace image with gravestone:
+// When entity dies, replace image with gravestone, change class and alt:
 function die(entity) {
-    entity.src = 'img/dead.png'
+    entity.src = 'img/dead.png';
+    entity.className = 'dead';
+    entity.alt = `dead ${nthWord(entity.className, 1)}`;
 }
 
 function populateMap() {
@@ -376,6 +390,7 @@ function changePlayerMeters(energy, hunger, thirst) {
     playerEnergy.innerHTML = parseInt(playerEnergy.innerHTML) + energy;
     playerHunger.innerHTML = parseInt(playerHunger.innerHTML) + hunger;
     playerThirst.innerHTML = parseInt(playerThirst.innerHTML) + thirst;
+
 }
 
 // Deplete player meters depending on terrain:
@@ -400,7 +415,6 @@ function applyTerrainEffects() {
     }
 }
 
-
 // Move entities randomly:
 function moveEntities() {
     // Iterate through all vectors in map array:
@@ -408,31 +422,34 @@ function moveEntities() {
         for (let y = 0; y < mapArr[x].length; y++) {
             // Check if vector has an entity and succeeds 50% chance:
             if (numWords(mapArr[x][y]) === 2 && chance(50)) {
-                // Create list of possible adjacent vectors to move entity:
-                let possibleDestinations = [];
-                for (let v = 0; v < 8; v++) {
-                    xo = x + adjVectors[v][0];
-                    yo = y + adjVectors[v][1];
-                    // Check if adjacent vectors are in bounds and have same terrain as current vector:
-                    if (inBounds(mapArr, xo, yo) && mapArr[xo][yo] === nthWord(mapArr[x][y], 1)) {
-                            possibleDestinations.push(adjVectors[v]);
+                // Check if entity is not search or dead icon:
+                if (['dead', 'search'].indexOf(nthWord(mapArr[x][y], 2)) === -1) {
+                    // Create list of possible adjacent vectors to move entity:
+                    let possibleDestinations = [];
+                    for (let v = 0; v < 8; v++) {
+                        xo = x + adjVectors[v][0];
+                        yo = y + adjVectors[v][1];
+                        // Check if adjacent vectors are in bounds and have same terrain as current vector:
+                        if (inBounds(mapArr, xo, yo) && mapArr[xo][yo] === nthWord(mapArr[x][y], 1)) {
+                                possibleDestinations.push(adjVectors[v]);
+                            }
                         }
+                    // If no possible destinations, do nothing:
+                    if (possibleDestinations.length !== 0) {
+                        let destination;
+                        if (possibleDestinations.length === 1) {
+                            destination = possibleDestinations[0];
+                        } else {
+                            destination = getRandArrItem(possibleDestinations);
+                        }
+                        xo = x + destination[0];
+                        yo = y + destination[1];
+                        // Give destination same entity as current vector:
+                        mapArr[xo][yo] += ' ' + nthWord(mapArr[x][y], 2);
+                        // Remove entity from current vector:
+                        mapArr[x][y] = nthWord(mapArr[x][y], 1);
                     }
-                // If no possible destinations, do nothing:
-                if (possibleDestinations.length !== 0) {
-                    let destination;
-                    if (possibleDestinations.length === 1) {
-                        destination = possibleDestinations[0];
-                    } else {
-                        destination = getRandArrItem(possibleDestinations);
                     }
-                    xo = x + destination[0];
-                    yo = y + destination[1];
-                    // Give destination same entity as current vector:
-                    mapArr[xo][yo] += ' ' + nthWord(mapArr[x][y], 2);
-                    // Remove entity from current vector:
-                    mapArr[x][y] = nthWord(mapArr[x][y], 1);
-                }
             }
         }
     }
@@ -464,11 +481,11 @@ function toggleActionPrompt() {
     if (actionPromptModal.style.display === "block") {
         actionPromptModal.style.display = "";
     } else {
-        actionPromptModal.style.display = "block";
         printPlayerAdjVectors(searchPreview);
         printPlayerAdjVectors(attackPreview);
         addEventListenerList(searchTargets, 'click', search);
         addEventListenerList(attackTargets, 'click', attack);
+        actionPromptModal.style.display = "block";
     }
 }
 
@@ -483,8 +500,8 @@ function printPlayerAdjVectors(element) {
                 html = "";
                 html += `<div class="${nthWord(mapArr[x][y], 1)} player"><img class="player" src="img/player.png" alt="player"></div>`
                 for (let v = 0; v < 8; v++) {
-                    xo = x + adjVectors[v][0];
-                    yo = y + adjVectors[v][1];
+                    let xo = x + adjVectors[v][0];
+                    let yo = y + adjVectors[v][1];
                     let terrain = nthWord(mapArr[xo][yo], 1);
                     let entity = nthWord(mapArr[xo][yo], 2);
                     html += `<div class="${terrain}">`
@@ -496,6 +513,22 @@ function printPlayerAdjVectors(element) {
     element.innerHTML = html;
 }
 
+// Copy target from preview to mapContainer:
+function updateMap(target) {
+    const preview = target.parentElement.children;
+    for (let v = 0; v < 8; v++) {
+        if (preview[v] === target);
+            const center = getCenter(mapArr);
+            let xo = center[0] + adjVectors[v][0];
+            let yo = center[1] + adjVectors[v][1];
+            let terrain = preview[v+1].className;
+            let entity;
+            if (preview[v+1].firstChild) entity = preview[v+1].firstChild.className;
+            mapArr[xo][yo] = (entity ? `${terrain} ${entity}` : terrain);
+    }
+    drawMap();
+}
+
 function search(event) {
     const searchTarget = event.target;
     if (!searchTarget.classList.contains('searched')) {
@@ -504,33 +537,49 @@ function search(event) {
             if (item.terrain === nthWord(searchTarget.className, 1) && chance(item.rarity)) {
                 const quantity = randomIntFromInterval(item.minNum, item.maxNum);
                 console.log(`You found ${item.name} (${quantity})!`);
-            } else {
-                console.log('Nothing here!');
             }
         });
-        searchTarget.classList.add("searched");
-        searchTarget.innerHTML = `<img class="search" src="img/search.png" alt="search"></div>`;
+        searchTarget.innerHTML = `<img class="search" src="img/search.png" alt="searched"></div>`;
+        updateMap(searchTarget);
     } else {
         console.log("Already searched!");
     } 
 }
 
-function attack(event) {
-    const attackTarget = event.target;
-    if (attackTarget.tagName === 'IMG' && attackTarget.className != 'player') {
-        if (chance(50)) {
-            console.log('You won!')
-            die(attackTarget);
-            toggleDrawer(attackLootDrawer);
-            attackLootTable.forEach(item => {
-                if (nthWord(item.name, 1) === attackTarget.className) {
-                    const quantity = randomIntFromInterval(item.minNum, item.maxNum);
-                    console.log(`You found ${item.name} (${quantity})!`);
-                }
-            });
+function simumlateCombat(entity) {
+    attackLootTable.forEach(item => {
+        if (nthWord(item.name, 1) === entity.className) {
+            if (chance(item.winChance)) {
+                console.log('You won!')
+                die(entity);
+                const quantity = randomIntFromInterval(item.minNum, item.maxNum);
+                console.log(`You found ${item.name} (${quantity})!`);
+                toggleDrawer(attackLootDrawer);
+            } else {
+                console.log('You lost!');
+            }
         }
-    } else {
-        console.log('No one here!');
+    });
+}
+
+function attack(event) {
+    // If player does not click player:
+    if (!event.target.classList.contains('player')) {
+    // If player clicks image:
+        if (event.target.tagName === "IMG") {
+            let entity = event.target;
+            let attackTarget = entity.parentElement;
+            simumlateCombat(entity);
+            updateMap(attackTarget);
+        // If player clicks div:
+        } else if (event.target.firstChild) {
+            let attackTarget = event.target;
+            let entity = attackTarget.firstChild;
+            simumlateCombat(entity);
+            updateMap(attackTarget);
+        } else {
+            console.log('No one here!');
+        }
     }
 }
 
