@@ -1,9 +1,8 @@
-const mapContainer = document.getElementById('map');
 const root = document.documentElement;
-let mapArr = [];
 let numRowsAndColumns = 21;
+const mapContainer = document.getElementById('map');
+let mapArr = [];
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
-let player;
 let adjVectors = [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ];
 
 let move = 12;
@@ -11,9 +10,12 @@ let day = document.getElementById("day");
 let hr = document.getElementById("hr");
 let min = document.getElementById("min");
 let amPM = document.getElementById("am-pm");
-let playerEnergy = document.getElementById("player-energy");
-let playerHunger = document.getElementById("player-hunger");
-let playerThirst = document.getElementById("player-thirst");
+let playerMeters = document.getElementsByClassName("meter-value");
+let playerAlive = true;
+
+const mainHeading = document.getElementById("main-heading");
+const subHeading = document.getElementById("sub-heading");
+const hideHeadings = document.getElementById("hide-headings");
 
 const dPadUp = document.getElementById("dpad-up");
 const dPadLeft = document.getElementById("dpad-left");
@@ -31,7 +33,7 @@ const searchPreview = document.querySelectorAll(".preview")[0];
 const searchTargets = searchPreview.children;
 const searchLootDrawer = document.querySelectorAll(".loot-drawer")[0];
 const searchLootBack = document.querySelectorAll(".loot-back-btn")[0];
-const searchLoot = document.querySelectorAll(".loot")[0];
+const searchResults = document.querySelectorAll(".results")[0];
 
 const attackBtn = document.getElementById("attack");
 const attackPreviewDrawer = document.querySelectorAll(".preview-drawer")[1];
@@ -40,185 +42,275 @@ const attackPreview = document.querySelectorAll(".preview")[1];
 const attackTargets = attackPreview.children;
 const attackLootDrawer = document.querySelectorAll(".loot-drawer")[1];
 const attackLootBack = document.querySelectorAll(".loot-back-btn")[1];
-const attackLoot = document.querySelectorAll(".loot")[1];
+const attackResults = document.querySelectorAll(".results")[1];
 
 const sleepBtn = document.getElementById("sleep");
 const sleepDrawer = document.querySelectorAll(".preview-drawer")[2];
 const sleepBack = document.querySelectorAll(".preview-back-btn")[2];
 
-const searchLootTable = [
-    {
-        name: "edible berries",
-        terrain: "plains",
-        hunger: 2,
-        thirst: 1,
-        minNum: 5,
-        maxNum: 20,
-        rarity: 33,
-    },
-    {
-        name: "poisonous berries",
-        terrain: "plains",
-        hunger: -2,
+const terrainValues = {
+    plains: {
+        hunger: -0.5,
         thirst: -1,
-        energy: -2,
-        minNum: 5,
-        maxNum: 20,
-        rarity: 10,
+        loot: [
+            {
+                name: "edible berries",
+                terrain: "plains",
+                energy: 0,
+                hunger: 2,
+                thirst: 1,
+                minNum: 5,
+                maxNum: 20,
+                rarity: 33,
+                img: "berries"
+            },
+            {
+                name: "poisonous berries",
+                terrain: "plains",
+                energy: 0,
+                hunger: -2,
+                thirst: -1,
+                energy: -2,
+                minNum: 5,
+                maxNum: 20,
+                rarity: 10,
+                img: "berries"
+            },
+            {
+                name: "wild carrots",
+                terrain: "plains",
+                energy: 0,
+                hunger: 4,
+                thirst: 1,
+                minNum: 3,
+                maxNum: 10,
+                rarity: 20,
+                img: "carrots"
+            },
+            {
+                name: "rabbits",
+                terrain: "plains",
+                energy: 0,
+                hunger: 10,
+                thirst: 1,
+                minNum: 1,
+                maxNum: 2,
+                rarity: 5,
+                img: "hunger"
+            },
+        ]
     },
-    {
-        name: "wild carrots",
-        terrain: "plains",
-        hunger: 4,
-        thirst: 1,
-        minNum: 3,
-        maxNum: 10,
-        rarity: 20,
-    },
-    {
-        name: "rabbits",
-        terrain: "plains",
-        hunger: 10,
-        thirst: 1,
-        minNum: 1,
-        maxNum: 2,
-        rarity: 5,
-    },
-    {
-        name: "edible mushrooms",
-        terrain: "forest",
-        hunger: 2,
-        thrist: 1,
-        minNum: 1,
-        maxNum: 10,
-        rarity: 20,
-    },
-    {
-        name: "squirrels",
-        terrain: "forest",
-        hunger: 10,
-        thirst: 1,
-        minNum: 1,
-        maxNum: 3,
-        rarity: 5,
-    },
-    {
-        name: "poisonous mushrooms",
-        terrain: "forest",
-        hunger: 2,
+    forest: {
+        hunger: -0.5,
         thirst: -1,
-        energy: -2,
-        minNum: 1,
-        maxNum: 10,
-        rarity: 20,
+        loot: [
+            {
+                name: "edible mushrooms",
+                terrain: "forest",
+                energy: 0,
+                hunger: 2,
+                thirst: 1,
+                minNum: 1,
+                maxNum: 10,
+                rarity: 20,
+                img: "mushrooms"
+            },
+            {
+                name: "squirrels",
+                terrain: "forest",
+                energy: 0,
+                hunger: 10,
+                thirst: 1,
+                minNum: 1,
+                maxNum: 3,
+                rarity: 5,
+                img: "hunger"
+            },
+            {
+                name: "poisonous mushrooms",
+                terrain: "forest",
+                energy: 0,
+                hunger: 2,
+                thirst: -1,
+                energy: -2,
+                minNum: 1,
+                maxNum: 10,
+                rarity: 20,
+                img: "mushrooms"
+            },
+            {
+                name: "wild greens",
+                terrain: "forest",
+                energy: 0,
+                hunger: 1,
+                thirst: 1,
+                minNum: 10,
+                maxNum: 30,
+                rarity: 40,
+                img: "greens"
+            },
+            {
+                name: "medicinal plants",
+                terrain: "forest",
+                energy: 5,
+                hunger: 1,
+                thirst: 1,
+                minNum: 3,
+                maxNum: 8,
+                rarity: 10,
+                img: "aloe"
+            }
+        ]
     },
-    {
-        name: "wild greens",
-        terrain: "forest",
-        hunger: 1,
-        thirst: 1,
-        minNum: 10,
-        maxNum: 30,
-        rarity: 40,
+    desert: {
+        hunger: -0.5,
+        thirst: -3,
+        loot: [
+            {
+                name: "cactus fruit",
+                terrain: "desert",
+                energy: 0,
+                hunger: 2,
+                thirst: 2,
+                minNum: 3,
+                maxNum: 15,
+                rarity: 25,
+                img: "cactus-fruit"
+            },
+            {
+                name: "coconuts",
+                terrain: "desert",
+                energy: 0,
+                hunger: 3,
+                thirst: 5,
+                minNum: 2,
+                maxNum: 10,
+                rarity: 20,
+                img: "coconuts"
+            }
+        ]
     },
-    {
-        name: "medicinal plants",
-        terrain: "forest",
-        hunger: 1,
-        thirst: 1,
-        energy: 5,
-        minNum: 3,
-        maxNum: 8,
-        rarity: 10,
-    },
-    {
-        name: "cactus fruit",
-        terrain: "desert",
-        hunger: 2,
-        thirst: 2,
-        minNum: 3,
-        maxNum: 15,
-        rarity: 25,
-    },
-    {
-        name: "coconuts",
-        terrain: "desert",
-        hunger: 3,
-        thirst: 5,
-        minNum: 2,
-        maxNum: 10,
-        rarity: 20,
-    },
-    {
-        name: "fish",
-        terrain: "water",
-        hunger: 10,
-        thirst: 1,
-        minNum: 1,
-        maxNum: 5,
-        rarity: 15,
-    },
-    {
-        name: "seaweed",
-        terrain: "water",
-        hunger: 1,
-        thirst: 1,
-        minNum: 10,
-        maxNum: 40,
-        rarity: 60,
-    },
-    {
-        name: "fresh water",
-        terrain: "water",
-        thirst: 10,
-        minNum: 1,
-        maxNum: 5,
-        rarity: 80,
-    },
-    {
-        name: "saltwater",
-        terrain: "water",
-        thirst: -10,
-        minNum: 1,
-        maxNum: 5,
-        rarity: 60,
-    }
-];
+    mountain: {
+        hunger: -1,
+        thirst: -1,
+        loot: [
 
-const attackLootTable = [
-    {
-        name: "snake meat",
-        hunger: 8,
-        thirst: 1,
-        minNum: 1,
-        maxNum: 3,
-        winChance: 65
+        ]
     },
-    {
-        name: "bear meat",
-        hunger: 15,
-        thirst: 1,
-        minNum: 3,
-        maxNum: 8,
-        winChance: 15
+    water: {
+        hunger: -1,
+        thirst: -0.5,
+        loot: [
+            {
+                name: "fish",
+                terrain: "water",
+                energy: 0,
+                hunger: 10,
+                thirst: 1,
+                minNum: 1,
+                maxNum: 5,
+                rarity: 15,
+                img: "fish"
+            },
+            {
+                name: "seaweed",
+                terrain: "water",
+                energy: 0,
+                hunger: 1,
+                thirst: 1,
+                minNum: 10,
+                maxNum: 40,
+                rarity: 60,
+                img: "seaweed"
+            },
+            {
+                name: "fresh water",
+                terrain: "water",
+                energy: 0,
+                hunger: 0,
+                thirst: 10,
+                minNum: 1,
+                maxNum: 5,
+                rarity: 80,
+                img: "thirst"
+            },
+            {
+                name: "saltwater",
+                terrain: "water",
+                energy: 0,
+                hunger: 0,
+                thirst: -10,
+                minNum: 1,
+                maxNum: 5,
+                rarity: 60,
+                img: "thirst"
+            }
+        ]
     },
-    {
-        name: "scorpion meat",
-        hunger: 5,
-        thirst: 1,
-        minNum: 1,
-        maxNum: 2,
-        winChance: 90
+}
+
+const entityValues = {
+    scorpion: {
+        damage: -25,
+        aggroChance: 20,
+        winChance: 90,
+        loot: [{
+            name: "scorpion meat",
+            energy: 0,
+            hunger: 5,
+            thirst: 1,
+            minNum: 1,
+            maxNum: 2,
+            rarity: 100,
+            img: "hunger"
+        }]
     },
-    {
-        name: "shark meat",
-        hunger: 12,
-        thirst: 1,
-        minNum: 3,
-        maxNum: 6,
-        winChance: 10
+    bear: {
+        damage: -80,
+        aggroChance: 60,
+        winChance: 15,
+        loot: [{
+            name: "bear meat",
+            energy: 0,
+            hunger: 15,
+            thirst: 1,
+            minNum: 3,
+            maxNum: 8,
+            rarity: 100,
+            img: "hunger"
+        }]
     },
-];
+    snake: {
+        damage: -50,
+        aggroChance: 10,
+        winChance: 65,
+        loot: [{
+            name: "snake meat",
+            energy: 0,
+            hunger: 8,
+            thirst: 1,
+            minNum: 1,
+            maxNum: 3,
+            rarity: 100,
+            img: "hunger"
+        }]
+    },
+    shark: {
+        damage: -70,
+        aggroChance: 90,
+        winChance: 10,
+        loot: [{
+            name: "shark meat",
+            energy: 0,
+            hunger: 12,
+            thirst: 1,
+            minNum: 3,
+            maxNum: 6,
+            rarity: 100,
+            img: "hunger"
+        }]
+    }
+}
 
 function getRandArrItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -386,33 +478,34 @@ function drawHorizon(previousHorizon) {
     return newHorizon;
 }
 
-function changePlayerMeters(energy, hunger, thirst) {
-    playerEnergy.innerHTML = parseInt(playerEnergy.innerHTML) + energy;
-    playerHunger.innerHTML = parseInt(playerHunger.innerHTML) + hunger;
-    playerThirst.innerHTML = parseInt(playerThirst.innerHTML) + thirst;
+// Change an individual meter (Does not factor in dehydration or starvation):
+function changeMeter(meter, value) {
+    let changeAttempt = parseInt(meter.innerHTML) + value;
+    if (changeAttempt > 0) {
+        if (changeAttempt < 100) {
+            meter.innerHTML = changeAttempt;
+        } else meter.innerHTML = 100;
+    } else meter.innerHTML = 0;
+}
 
+// Change all player meters:
+function changePlayerMeters(energy = 0, hunger = 0, thirst = 0) {
+    let values = [];
+    for (i = 0; i < 3; i++) {
+        changeMeter(playerMeters[i], arguments[i]);
+        values.push(parseInt(playerMeters[i].innerHTML));
+    }
+    // Deplete energy if dehydrated or starving:
+    if (values[1] == 0) changeMeter(playerMeters[0], -2);
+    if (values[2] == 0) changeMeter(playerMeters[0], -4);
+    // Increase energy if hunger and thirst are above half:
+    if (values[1] > 50 && values[2] > 50) changeMeter(playerMeters[0], 1);
 }
 
 // Deplete player meters depending on terrain:
-function applyTerrainEffects() {
-    const player = document.querySelector("#map div img.player");
-    switch (player.parentElement.className) {
-        case "plains":
-            changePlayerMeters(0, -1, -2);
-        break;
-        case "forest":
-            changePlayerMeters(0, -1, -2);
-        break;
-        case "desert":
-            changePlayerMeters(0, -1, -5);
-        break;
-        case "mountain":
-            changePlayerMeters(0, -2, -2);
-        break;
-        case "water":
-            changePlayerMeters(0, -2, -1);
-        break;
-    }
+function applyTerrainEffects(multiplier) {
+    const playerTerrain = nthWord(mapContainer.querySelector('img.player').parentElement.className, 1);
+    changePlayerMeters(0, terrainValues[playerTerrain].hunger*multiplier, terrainValues[playerTerrain].thirst*multiplier)
 }
 
 // Move entities randomly:
@@ -529,37 +622,55 @@ function updateMap(target) {
     drawMap();
 }
 
+function getAndPrintLoot(output, loot) {
+    console.log(output);
+    output.innerHTML = '<ul></ul>'
+    loot.forEach(item => {
+        if (chance(item.rarity)) {
+            const quantity = randomIntFromInterval(item.minNum, item.maxNum);
+            const newLi = document.createElement('li');
+            newLi.className = "interactable tooltips";
+            newLi.innerHTML = `<img class="fit-img" src="img/${item.img}.png" alt="${item.name}"><div class="quantity">x${quantity}</div><span>${item.name}</span>`
+            output.querySelector('ul').appendChild(newLi);
+            newLi.addEventListener('click', function() {
+                changePlayerMeters(item.energy*quantity, item.hunger*quantity, item.thirst*quantity);
+                event.target.parentElement.tagName === "LI" ? event.target.parentElement.remove() : event.target.remove();
+                if (output.querySelector('ul').innerHTML === '') toggleDrawer(output.parentElement);
+            });
+        }
+    });
+    if (output.querySelector('ul').innerHTML === '') output.innerHTML = "Nothing here!";
+}
+
 function search(event) {
     const searchTarget = event.target;
-    if (!searchTarget.classList.contains('searched')) {
-        toggleDrawer(searchLootDrawer);
-        searchLootTable.forEach(item => {
-            if (item.terrain === nthWord(searchTarget.className, 1) && chance(item.rarity)) {
-                const quantity = randomIntFromInterval(item.minNum, item.maxNum);
-                console.log(`You found ${item.name} (${quantity})!`);
-            }
-        });
+    const terrainName = nthWord(searchTarget.className, 1);
+    if (searchTarget.classList.contains('searched')) {
+        searchResults.innerHTML += "Already searched!";
+    } else {
+        getAndPrintLoot(searchResults, terrainValues[terrainName].loot);
         searchTarget.innerHTML = `<img class="search" src="img/search.png" alt="searched"></div>`;
         updateMap(searchTarget);
-    } else {
-        console.log("Already searched!");
-    } 
+    }
+    toggleDrawer(searchLootDrawer);
+    addTime(2);
+    applyTerrainEffects(2);
 }
 
 function simumlateCombat(entity) {
-    attackLootTable.forEach(item => {
-        if (nthWord(item.name, 1) === entity.className) {
-            if (chance(item.winChance)) {
-                console.log('You won!')
-                die(entity);
-                const quantity = randomIntFromInterval(item.minNum, item.maxNum);
-                console.log(`You found ${item.name} (${quantity})!`);
-                toggleDrawer(attackLootDrawer);
-            } else {
-                console.log('You lost!');
-            }
-        }
-    });
+    entityName = entity.className;
+    if (chance(entityValues[entityName].winChance)) {
+        die(entity);
+        // Display loot:
+        attackResults.innerHTML += `<p>You won!</p><ul></ul>`
+        getAndPrintLoot(attackResults.querySelector('ul'), entityValues[entityName].loot);
+        toggleDrawer(attackLootDrawer);
+    } else {
+        attackResults.innerHTML += `<p>You lost!</p>`
+        changePlayerMeters(entityValues[entityName].damage, 0, 0);
+    }
+    addTime(1);
+    applyTerrainEffects(3);
 }
 
 function attack(event) {
@@ -632,7 +743,7 @@ function movePlayer(direction) {
         }
         moveEntities();
         drawMap();
-        applyTerrainEffects();
+        applyTerrainEffects(1);
         addTime(1);
     }
 }
@@ -643,6 +754,18 @@ createArray(numRowsAndColumns);
 createChunks();
 populateMap();
 drawMap();
+
+hideHeadings.addEventListener("click", function(event) {
+    if (mainHeading.style.display === "block" && subHeading.style.display === "block") {
+        mainHeading.style.display = "none";
+        subHeading.style.display = "none";
+        hideHeadings.innerHTML = "Wait, how do I play?";
+    } else {
+        mainHeading.style.display = "block";
+        subHeading.style.display = "block";
+        hideHeadings.innerHTML = "OK, got it";
+    }
+});
 
 // Move player using WASD, arrow keys, or dpad unless action prompt is open:
 window.addEventListener("keydown", function(event) {
@@ -683,11 +806,17 @@ closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.
 // Open drawers when action prompt buttons are pressed:
 searchBtn.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
 searchPreviewBack.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
-searchLootBack.addEventListener("click", function() {toggleDrawer(searchLootDrawer)});
+searchLootBack.addEventListener("click", function() {
+    toggleDrawer(searchLootDrawer)
+    searchResults.innerHTML = '';
+});
 
 attackBtn.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
 attackPreviewBack.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
-attackLootBack.addEventListener("click", function() {toggleDrawer(attackLootDrawer)});
+attackLootBack.addEventListener("click", function() {
+    toggleDrawer(attackLootDrawer)
+    attackResults.innerHTML = '';
+});
 
 sleepBtn.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
 sleepBack.addEventListener("click", function() {toggleDrawer(sleepDrawer)});

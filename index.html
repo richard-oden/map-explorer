@@ -9,46 +9,47 @@
 <body>
     <main>
         <div id="headings">
-            <h1 class="main-heading">Map Explorer</h1>
-            <p class="sub-heading">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. The space bar or 'A' button will open the action menu. How long can you survive?</p>
+            <h1 id="main-heading" style="display: block;">Map Explorer</h1>
+            <p id="sub-heading" style="display: block;">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. The space bar or 'A' button on screen will open the action menu. Explore new lands, search for food and water, and be wary of animals.</p>
+            <button id="hide-headings" class="interactable" type="button">OK, got it.</button>
         </div>
 
         <div id="map-wrapper">
             <div id="action-prompt-modal">
                 <div id="action-prompt-box">
                     <div id="action-prompt-heading">
-                        <h3>Select an action:</h3>
+                        <p>Select an action:</p>
                         <span id="close-action-prompt" class="interactable">&times;</span>
                     </div>
-                    <label class="interactable" for="search"><img src="img/search.png" alt="Search"></label>
+                    <label class="interactable" for="search"><img class="fit-img" src="img/search.png" alt="Search"></label>
                     <div class="btn-wrapper">
                         <button id="search" class="interactable" type="button">Search</button>
                         <div class="preview-drawer">
-                            <img class="preview-back-btn interactable" src="img/arrow.png" alt="Back">
+                            <img class="preview-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
                             <div class="preview"></div>
                         </div>
                         <div class="loot-drawer">
-                            <img class="loot-back-btn interactable" src="img/arrow.png" alt="Back">
-                            <div class="loot"></div>
+                            <img class="loot-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
+                            <div class="results"></div>
                         </div>
                     </div>
-                    <label class="interactable" for="attack"><img src="img/attack.png" alt="Attack"></label>
+                    <label class="interactable" for="attack"><img class="fit-img" src="img/attack.png" alt="Attack"></label>
                     <div class="btn-wrapper">
                         <button id="attack" class="interactable" type="button">Attack</button>
                         <div class="preview-drawer">
-                            <img class="preview-back-btn interactable" src="img/arrow.png" alt="Back">
+                            <img class="preview-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
                             <div class="preview"></div>
                         </div>
                         <div class="loot-drawer">
-                            <img class="loot-back-btn interactable" src="img/arrow.png" alt="Back">
-                            <div class="loot"></div>
+                            <img class="loot-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
+                            <div class="results"></div>
                         </div>
                     </div>
-                    <label class="interactable" for="sleep"><img src="img/sleep.png" alt="Sleep"></label>
+                    <label class="interactable" for="sleep"><img class="fit-img" src="img/sleep.png" alt="Sleep"></label>
                     <div class="btn-wrapper">
                         <button id="sleep" class="interactable" type="button">Sleep</button>
                         <div class="preview-drawer">
-                            <img class="preview-back-btn interactable" src="img/arrow.png" alt="Back">
+                            <img class="preview-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
                             <input id="sleep-hr" class="interactable" type="text" value="1">
                             <span>hr(s)</span>
                         </div>
@@ -61,17 +62,17 @@
 
         <div id="stats-dpad">
             <ul id="player-meters">
-                <li><img src="img/health.png" alt="Health"> <span id="player-energy">100</span>%</li>
-                <li><img src="img/hunger.png" alt="Hunger"> <span id="player-hunger">100</span>%</li>
-                <li><img src="img/thirst.png" alt="Thirst"> <span id="player-thirst">100</span>%</li>
+                <li><img src="img/health.png" alt="Health"> <span class="meter-value">100</span>%</li>
+                <li><img src="img/hunger.png" alt="Hunger"> <span class="meter-value">100</span>%</li>
+                <li><img src="img/thirst.png" alt="Thirst"> <span class="meter-value">100</span>%</li>
             </ul>
             <div id="dpad-wrapper">
                 <div id="dpad">
-                    <div id="dpad-up"><img class="interactable" src="img/arrow.png" alt="Up arrow"></div>
-                    <div id="dpad-left"><img class="interactable" src="img/arrow.png" alt="Left arrow"></div>
+                    <div id="dpad-up"><img class="interactable fit-img" src="img/arrow.png" alt="Up arrow"></div>
+                    <div id="dpad-left"><img class="interactable fit-img" src="img/arrow.png" alt="Left arrow"></div>
                     <div id="action-button" class="interactable">A</div>
-                    <div id="dpad-right"><img class="interactable" src="img/arrow.png" alt="Right arrow"></div>
-                    <div id="dpad-down"><img class="interactable" src="img/arrow.png" alt="Down arrow"></div>
+                    <div id="dpad-right"><img class="interactable fit-img" src="img/arrow.png" alt="Right arrow"></div>
+                    <div id="dpad-down"><img class="interactable fit-img" src="img/arrow.png" alt="Down arrow"></div>
                 </div>
             </div>
             <div id="turn-counter">
