@@ -25,6 +25,7 @@ const actionBtn = document.getElementById("action-button");
 
 const actionPromptModal = document.getElementById("action-prompt-modal");
 const closeActionPrompt = document.getElementById("close-action-prompt");
+const actionPromptBox = document.getElementById("action-prompt-box");
 
 const searchBtn = document.getElementById("search");
 const searchPreviewDrawer = document.querySelectorAll(".preview-drawer")[0];
@@ -47,6 +48,9 @@ const attackResults = document.querySelectorAll(".results")[1];
 const sleepBtn = document.getElementById("sleep");
 const sleepDrawer = document.querySelectorAll(".preview-drawer")[2];
 const sleepBack = document.querySelectorAll(".preview-back-btn")[2];
+const sleepHr = document.getElementById("sleep-hr");
+const submitSleep = document.getElementById("submit-sleep");
+const sleepTimer = document.getElementById("sleep-timer");
 
 const terrainValues = {
     plains: {
@@ -623,7 +627,6 @@ function updateMap(target) {
 }
 
 function getAndPrintLoot(output, loot) {
-    console.log(output);
     output.innerHTML = '<ul></ul>'
     loot.forEach(item => {
         if (chance(item.rarity)) {
@@ -668,6 +671,7 @@ function simumlateCombat(entity) {
     } else {
         attackResults.innerHTML += `<p>You lost!</p>`
         changePlayerMeters(entityValues[entityName].damage, 0, 0);
+        toggleDrawer(attackLootDrawer);
     }
     addTime(1);
     applyTerrainEffects(3);
@@ -694,14 +698,21 @@ function attack(event) {
     }
 }
 
-function sleep(hr) {
-    addTime(hr*2);
-    changePlayerMeters(2.5*hr, Math.floor(-0.5*hr), hr);
+function sleep(move) {
+    for (let m = 0; m < move; m++) {
+        setTimeout(function(){
+            addTime(1);
+            changePlayerMeters(2, 0, 0);
+            applyTerrainEffects(0.5);
+            moveEntities();
+            drawMap();
+        }, m * 500);
+    }
 }
 
 function movePlayer(direction) {
     // Don't move player if action prompt is displayed:
-    if (actionPromptModal.style.display === "") {
+    if (actionPromptModal.style.display === "" && sleepTimer.style.display === "") {
         switch (direction) {
             case "up":
                 for (let x = mapArr.length-1; x > 0; x--) {
@@ -820,3 +831,11 @@ attackLootBack.addEventListener("click", function() {
 
 sleepBtn.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
 sleepBack.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
+submitSleep.addEventListener("click", function() {
+    toggleActionPrompt();
+    sleepTimer.style.display = "block";
+    sleep(parseInt(sleepHr.value)*2);
+    setTimeout(function(){
+        sleepTimer.style.display = "";
+    }, sleepHr.value*1000);
+});

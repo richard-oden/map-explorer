@@ -306,6 +306,7 @@ main {
 
 .preview-back-btn,
 .loot-back-btn {
+    transform: rotate(180deg);
     max-width: 20%;
 }
 
@@ -327,15 +328,35 @@ main {
 }
 
 #sleep-hr {
-    height: 100%;
-    width: 100%;
-    flex: 2;
+    height: 80%;
+    width: 20%;
     margin: 5px;
     font-size: 1em;
     border: 2px solid black;
     border-radius: 5px;
     font-family: 'Montserrat', sans-serif;
-    padding: 15px;
+    padding: 5px;
+}
+
+#submit-sleep {
+    max-width: 20%;
+}
+
+@keyframes pulse-opacity {
+    0% {opacity: 0.1;}
+    50% {opacity: 0.8;}
+    100% {opacity: 0.1;}
+}
+
+#sleep-timer {
+    display: none;
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 70%; height: 70%;
+    transform: translate(-50%, -50%);
+    animation-name: pulse-opacity;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
 }
 
 /* Tooltips ---------------------------- */
