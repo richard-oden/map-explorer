@@ -52,6 +52,8 @@ const sleepHr = document.getElementById("sleep-hr");
 const submitSleep = document.getElementById("submit-sleep");
 const sleepTimer = document.getElementById("sleep-timer");
 
+const deathScreen = document.getElementById("death-screen");
+
 const terrainValues = {
     plains: {
         hunger: -0.5,
@@ -341,8 +343,7 @@ function getCenter(arr2d) {
 }
 
 function chance(percent) {
-    result = Math.floor(Math.random() * 100) + 1;
-    if (result <= percent) return true;
+    if (Math.random()*100 <= percent) return true;
 }
 
 function randomIntFromInterval(min, max) {
@@ -492,6 +493,18 @@ function changeMeter(meter, value) {
     } else meter.innerHTML = 0;
 }
 
+// Kill player and show game over screen:
+function playerDie() {
+    playerMeters[0].innerHTML = 0;
+    playerAlive = false;
+    die(mapContainer.querySelector('img.player'));
+    actionPromptModal.style.display = "";
+    sleepTimer.style.display = "";
+    
+    deathScreen.style.display = "flex";
+    deathScreen.style.opacity = 0.8;
+}
+
 // Change all player meters:
 function changePlayerMeters(energy = 0, hunger = 0, thirst = 0) {
     let values = [];
@@ -502,8 +515,10 @@ function changePlayerMeters(energy = 0, hunger = 0, thirst = 0) {
     // Deplete energy if dehydrated or starving:
     if (values[1] == 0) changeMeter(playerMeters[0], -2);
     if (values[2] == 0) changeMeter(playerMeters[0], -4);
+    // If energy drops to 0, player dies:
+    if (values[0] == 0) playerDie();
     // Increase energy if hunger and thirst are above half:
-    if (values[1] > 50 && values[2] > 50) changeMeter(playerMeters[0], 1);
+    if (playerAlive && (values[1] > 50 && values[2] > 50)) changeMeter(playerMeters[0], 1);
 }
 
 // Deplete player meters depending on terrain:
@@ -574,15 +589,26 @@ function addTime(numMoves) {
     }
 }
 
+// Return array of conditions that disable input. An array is returned instead of a single boolean because different input methods require different conditions.
+function inputDisabled() {
+    let allow = [];
+    allow.push(actionPromptModal.style.display === "" ? true : false);
+    allow.push(sleepTimer.style.display === "" ? true : false);
+    allow.push(playerAlive);
+    return allow;
+}
+
 function toggleActionPrompt() {
-    if (actionPromptModal.style.display === "block") {
-        actionPromptModal.style.display = "";
-    } else {
-        printPlayerAdjVectors(searchPreview);
-        printPlayerAdjVectors(attackPreview);
-        addEventListenerList(searchTargets, 'click', search);
-        addEventListenerList(attackTargets, 'click', attack);
-        actionPromptModal.style.display = "block";
+    if (!inputDisabled().slice(1, 3).includes(false)) {
+        if (actionPromptModal.style.display === "block") {
+            actionPromptModal.style.display = "";
+        } else {
+            printPlayerAdjVectors(searchPreview);
+            printPlayerAdjVectors(attackPreview);
+            addEventListenerList(searchTargets, 'click', search);
+            addEventListenerList(attackTargets, 'click', attack);
+            actionPromptModal.style.display = "block";
+        }
     }
 }
 
@@ -646,18 +672,30 @@ function getAndPrintLoot(output, loot) {
 }
 
 function search(event) {
-    const searchTarget = event.target;
+    let searchTarget;
+    let entity;
+    // If player clicks image:
+    if (event.target.tagName === "IMG") {
+        entity = event.target;
+        searchTarget = entity.parentElement;
+    // If player clicks div:
+    } else {
+        searchTarget = event.target;
+        if (event.target.firstChild) entity = searchTarget.firstChild;
+    }
     const terrainName = nthWord(searchTarget.className, 1);
-    if (searchTarget.classList.contains('searched')) {
-        searchResults.innerHTML += "Already searched!";
+    if (entity && entity.classList.contains('search')) {
+        searchResults.innerHTML += "Already searched!"; 
+    } else if (entity && Object.keys(entityValues).indexOf(entity.className) > -1) {
+        searchResults.innerHTML += "It's too dangerous!"; 
     } else {
         getAndPrintLoot(searchResults, terrainValues[terrainName].loot);
         searchTarget.innerHTML = `<img class="search" src="img/search.png" alt="searched"></div>`;
         updateMap(searchTarget);
+        addTime(2);
+        applyTerrainEffects(2);
     }
     toggleDrawer(searchLootDrawer);
-    addTime(2);
-    applyTerrainEffects(2);
 }
 
 function simumlateCombat(entity) {
@@ -711,8 +749,8 @@ function sleep(move) {
 }
 
 function movePlayer(direction) {
-    // Don't move player if action prompt is displayed:
-    if (actionPromptModal.style.display === "" && sleepTimer.style.display === "") {
+    // Don't move player if movement disabled:
+    if (!inputDisabled().includes(false)) {
         switch (direction) {
             case "up":
                 for (let x = mapArr.length-1; x > 0; x--) {

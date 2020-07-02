@@ -19,7 +19,6 @@ body {
     margin: 0;
     display: flex;
     justify-content: center;
-    overflow: hidden;
 }
 
 main {
@@ -185,17 +184,22 @@ main {
 #action-prompt-box button,
 .preview-drawer,
 .preview,
-.loot-drawer {
+.loot-drawer,
+#death-screen {
     height: 100%;
     width: 100%;
 }
 
-#action-prompt-modal {
+#action-prompt-modal,
+#death-screen {
     display: none;
     position: absolute;
     z-index: 1;
     left: 0;
     top: 0;
+}
+
+#action-prompt-modal {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
@@ -359,6 +363,19 @@ main {
     animation-iteration-count: infinite;
 }
 
+#death-screen {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background-color: darkred;
+    font-size: 3em;
+    color: white;
+    text-align: center;
+    padding: auto 0;
+    opacity: 0;
+    transition: opacity 3s;
+}
+
 /* Tooltips ---------------------------- */
 
 .tooltips {
@@ -379,7 +396,7 @@ main {
     font-size: .8em;
 }
 
-:hover.tooltips span {
+.tooltips:hover span {
     visibility: visible;
     opacity: 0.8;
     top: 10%;
