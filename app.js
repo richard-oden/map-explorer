@@ -12,6 +12,7 @@ let min = document.getElementById("min");
 let amPM = document.getElementById("am-pm");
 let playerMeters = document.getElementsByClassName("meter-value");
 let playerAlive = true;
+let timeAwake = 0;
 
 const mainHeading = document.getElementById("main-heading");
 const subHeading = document.getElementById("sub-heading");
@@ -500,7 +501,7 @@ function playerDie() {
     die(mapContainer.querySelector('img.player'));
     actionPromptModal.style.display = "";
     sleepTimer.style.display = "";
-    
+
     deathScreen.style.display = "flex";
     deathScreen.style.opacity = 0.8;
 }
@@ -512,19 +513,22 @@ function changePlayerMeters(energy = 0, hunger = 0, thirst = 0) {
         changeMeter(playerMeters[i], arguments[i]);
         values.push(parseInt(playerMeters[i].innerHTML));
     }
-    // Deplete energy if dehydrated or starving:
+    // Deplete energy if dehydrated, starving, or sleep deprived:
     if (values[1] == 0) changeMeter(playerMeters[0], -2);
     if (values[2] == 0) changeMeter(playerMeters[0], -4);
-    // If energy drops to 0, player dies:
-    if (values[0] == 0) playerDie();
+    if (timeAwake > 36) changeMeter(playerMeters[0], -2);
     // Increase energy if hunger and thirst are above half:
     if (playerAlive && (values[1] > 50 && values[2] > 50)) changeMeter(playerMeters[0], 1);
+    // If energy drops to 0, player dies:
+    if (values[0] == 0) playerDie();
 }
 
 // Deplete player meters depending on terrain:
 function applyTerrainEffects(multiplier) {
+    if (playerAlive === true) {
     const playerTerrain = nthWord(mapContainer.querySelector('img.player').parentElement.className, 1);
-    changePlayerMeters(0, terrainValues[playerTerrain].hunger*multiplier, terrainValues[playerTerrain].thirst*multiplier)
+    changePlayerMeters(0, terrainValues[playerTerrain].hunger*multiplier, terrainValues[playerTerrain].thirst*multiplier);
+    }
 }
 
 // Move entities randomly:
@@ -561,7 +565,45 @@ function moveEntities() {
                         // Remove entity from current vector:
                         mapArr[x][y] = nthWord(mapArr[x][y], 1);
                     }
+                }
+            }
+        }
+    }
+    checkForAttacks();
+}
+
+// Check player adjacent vectors for entities and simulate attacks:
+function checkForAttacks() {
+    for (let x = 0; x < mapArr.length; x++) {
+        for (let y = 0; y < mapArr[x].length; y++) {
+            if (isCenter(mapArr, x, y)) {
+                let adjEntities = [];
+                if (numWords(mapArr[x][y]) === 2 && Object.keys(entityValues).includes(nthWord(mapArr[x][y], 2)));
+                for (let v = 0; v < 8; v++) {
+                    let xo = x + adjVectors[v][0];
+                    let yo = y + adjVectors[v][1];
+                    if (numWords(mapArr[xo][yo]) === 2 && Object.keys(entityValues).includes(nthWord(mapArr[xo][yo], 2)));
+                }
+                adjEntities.forEach(entity => {
+                    if (chance(entityValues[entity].aggroChance)) {
+                        actionPromptModal.style.display = "";
+                        sleepTimer.style.display = "";
+                        attackResults.innerHTML += `<p>A ${entity} attacked!</p>`
+                        if (chance(entityValues[entity].winChance)) {
+                            attackResults.innerHTML += `<p>You scared it away!</p>`
+
+                        } else {
+                            attackResults.innerHTML += `<p>You lost!</p>`
+                            changePlayerMeters(entityValues[entity].damage, 0, 0);
+                        }
+                        printPlayerAdjVectors(searchPreview);
+                        printPlayerAdjVectors(attackPreview);
+                        addEventListenerList(searchTargets, 'click', search);
+                        addEventListenerList(attackTargets, 'click', attack);
+                        actionPromptModal.style.display = "block";
+                        toggleDrawer(attackLootDrawer);
                     }
+                });
             }
         }
     }
@@ -570,6 +612,7 @@ function moveEntities() {
 // Increment time for each move. Each move is considered 30 mins:
 function addTime(numMoves) {
     move += numMoves;
+    if (sleepTimer.style.display === "") timeAwake += numMoves;
     for (let m = 0; m < numMoves; m++) {
         min.innerHTML = parseInt(min.innerHTML) + 30;
         if (parseInt(min.innerHTML) === 60) {
@@ -737,6 +780,7 @@ function attack(event) {
 }
 
 function sleep(move) {
+    timeAwake = 0;
     for (let m = 0; m < move; m++) {
         setTimeout(function(){
             addTime(1);
