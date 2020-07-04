@@ -578,11 +578,11 @@ function checkForAttacks() {
         for (let y = 0; y < mapArr[x].length; y++) {
             if (isCenter(mapArr, x, y)) {
                 let adjEntities = [];
-                if (numWords(mapArr[x][y]) === 2 && Object.keys(entityValues).includes(nthWord(mapArr[x][y], 2)));
+                if (numWords(mapArr[x][y]) === 2 && entityValues[nthWord(mapArr[x][y], 2)]) adjEntities.push(nthWord(mapArr[x][y], 2));
                 for (let v = 0; v < 8; v++) {
                     let xo = x + adjVectors[v][0];
                     let yo = y + adjVectors[v][1];
-                    if (numWords(mapArr[xo][yo]) === 2 && Object.keys(entityValues).includes(nthWord(mapArr[xo][yo], 2)));
+                    if (numWords(mapArr[xo][yo]) === 2 && entityValues[nthWord(mapArr[xo][yo], 2)]) adjEntities.push(nthWord(mapArr[xo][yo], 2));
                 }
                 adjEntities.forEach(entity => {
                     if (chance(entityValues[entity].aggroChance)) {
