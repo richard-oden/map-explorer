@@ -53,6 +53,8 @@ const sleepHr = document.getElementById("sleep-hr");
 const submitSleep = document.getElementById("submit-sleep");
 const sleepTimer = document.getElementById("sleep-timer");
 
+const nightOverlay = document.getElementById("night-overlay");
+
 const deathScreen = document.getElementById("death-screen");
 
 const terrainValues = {
@@ -351,6 +353,10 @@ function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+function isBetween(int, min, max) {
+    return int > min && int < max ? true : false;
+}
+
 function print(message) {
     mapContainer.innerHTML = message;
 }
@@ -503,7 +509,7 @@ function playerDie() {
     sleepTimer.style.display = "";
 
     deathScreen.style.display = "flex";
-    deathScreen.style.opacity = 0.8;
+    deathScreen.style.opacity = "0.8";
 }
 
 // Change all player meters:
@@ -629,6 +635,15 @@ function addTime(numMoves) {
                 hr.innerHTML = "1";
             }
         };
+    }
+    // Show night overlay between 9pm and 6am:
+    if ((amPM.innerHTML === "pm" && isBetween(parseInt(hr.innerHTML), 8, 12)) || 
+        (amPM.innerHTML === "am" && (isBetween(parseInt(hr.innerHTML), 0, 6) || parseInt(hr.innerHTML) === 12))) {
+        nightOverlay.style.display = "block";
+        nightOverlay.style.opacity = "0.5";
+    } else {
+        nightOverlay.style.opacity = "0";
+        nightOverlay.style.display = "";
     }
 }
 

@@ -185,13 +185,15 @@ main {
 .preview-drawer,
 .preview,
 .loot-drawer,
-#death-screen {
+#death-screen,
+#night-overlay {
     height: 100%;
     width: 100%;
 }
 
 #action-prompt-modal,
-#death-screen {
+#death-screen,
+#night-overlay {
     display: none;
     position: absolute;
     z-index: 1;
@@ -201,6 +203,7 @@ main {
 
 #action-prompt-modal {
     background-color: rgba(255, 255, 255, 0.4);
+    z-index: 2;
 }
 
 #action-prompt-box {
@@ -346,36 +349,6 @@ main {
     max-width: 20%;
 }
 
-@keyframes pulse-opacity {
-    0% {opacity: 0.1;}
-    50% {opacity: 0.8;}
-    100% {opacity: 0.1;}
-}
-
-#sleep-timer {
-    display: none;
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 70%; height: 70%;
-    transform: translate(-50%, -50%);
-    animation-name: pulse-opacity;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-}
-
-#death-screen {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    background-color: darkred;
-    font-size: 3em;
-    color: white;
-    text-align: center;
-    padding: auto 0;
-    opacity: 0;
-    transition: opacity 3s;
-}
-
 /* Tooltips ---------------------------- */
 
 .tooltips {
@@ -403,6 +376,45 @@ main {
     left: 50%;
     transform: translate(-50%);
     z-index: 999;
+}
+
+/* Other overlays ---------------------------- */
+
+@keyframes pulse-opacity {
+    0% {opacity: 0.1;}
+    50% {opacity: 0.8;}
+    100% {opacity: 0.1;}
+}
+
+#sleep-timer {
+    display: none;
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 70%; height: 70%;
+    transform: translate(-50%, -50%);
+    animation-name: pulse-opacity;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+#night-overlay,
+#death-screen {
+    opacity: 0;
+    transition: opacity 3s;
+}
+
+#night-overlay {
+    background-color: rgb(48, 59, 94);
+}
+
+#death-screen {
+    justify-content: center;
+    align-items: center;
+    background-color: darkred;
+    font-size: 3em;
+    color: white;
+    text-align: center;
+    padding: auto 0;
 }
 
 /* Dpad styles ---------------------------- */
