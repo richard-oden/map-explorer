@@ -4,6 +4,7 @@ const mapContainer = document.getElementById('map');
 let mapArr = [];
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let adjVectors = [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ];
+let centerDiv; // <-- This is defined later as part of the drawMap function
 
 let move = 12;
 let day = document.getElementById("day");
@@ -428,6 +429,16 @@ function populateMap() {
     }
 }
 
+// Alternate player and entity images:
+function alternatePlayerAndEntity() {
+    const entity = nthWord(centerDiv.className, 2);
+    if (centerDiv.firstChild.className === "player") {
+        centerDiv.innerHTML = `<img class="${entity}" src="img/${entity}.png" alt="${entity}">`;
+    } else {
+        centerDiv.innerHTML = `<img class="player" src="img/player.png" alt="player">`;
+    }
+}
+
 function drawMap() {
     let html = '';
     for (let x = 0; x < mapArr.length; x++) {
@@ -447,6 +458,10 @@ function drawMap() {
         }
     }
     print(html);
+    centerDiv = mapContainer.children[Math.floor(mapContainer.children.length / 2)];
+    // If player and entity occupy same vector, alternate their images:
+    let alternate = setInterval(alternatePlayerAndEntity, 500);
+    numWords(centerDiv.className) === 2 ? alternate : clearInterval(alternate); 
 }
 
 // Create new edge of map:
@@ -594,12 +609,12 @@ function checkForAttacks() {
                     if (chance(entityValues[entity].aggroChance)) {
                         actionPromptModal.style.display = "";
                         sleepTimer.style.display = "";
-                        attackResults.innerHTML += `<p>A ${entity} attacked!</p>`
+                        attackResults.innerHTML = `<p>A ${entity} attacked!</p>`
                         if (chance(entityValues[entity].winChance)) {
                             attackResults.innerHTML += `<p>You scared it away!</p>`
 
                         } else {
-                            attackResults.innerHTML += `<p>You lost!</p>`
+                            attackResults.innerHTML += `<p>It wouldn't go away!</p>`
                             changePlayerMeters(entityValues[entity].damage, 0, 0);
                         }
                         printPlayerAdjVectors(searchPreview);
