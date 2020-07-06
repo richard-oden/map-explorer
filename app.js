@@ -1,11 +1,18 @@
+//Variables---------------------------------------------------------------------------------------------
+
+//Important/misc:
 const root = document.documentElement;
 let numRowsAndColumns = 21;
 const mapContainer = document.getElementById('map');
 let mapArr = [];
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let adjVectors = [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ];
-let centerDiv; // <-- This is defined later as part of the drawMap function
+//These are used to alternate images as part of drawMap:
+let centerDiv;
+let alternate;
+let alternating = false;
 
+// Game statistics:
 let move = 12;
 let day = document.getElementById("day");
 let hr = document.getElementById("hr");
@@ -14,50 +21,6 @@ let amPM = document.getElementById("am-pm");
 let playerMeters = document.getElementsByClassName("meter-value");
 let playerAlive = true;
 let timeAwake = 0;
-
-const mainHeading = document.getElementById("main-heading");
-const subHeading = document.getElementById("sub-heading");
-const hideHeadings = document.getElementById("hide-headings");
-
-const dPadUp = document.getElementById("dpad-up");
-const dPadLeft = document.getElementById("dpad-left");
-const dPadRight = document.getElementById("dpad-right");
-const dPadDown = document.getElementById("dpad-down");
-const actionBtn = document.getElementById("action-button");
-
-const actionPromptModal = document.getElementById("action-prompt-modal");
-const closeActionPrompt = document.getElementById("close-action-prompt");
-const actionPromptBox = document.getElementById("action-prompt-box");
-
-const searchBtn = document.getElementById("search");
-const searchPreviewDrawer = document.querySelectorAll(".preview-drawer")[0];
-const searchPreviewBack = document.querySelectorAll(".preview-back-btn")[0];
-const searchPreview = document.querySelectorAll(".preview")[0];
-const searchTargets = searchPreview.children;
-const searchLootDrawer = document.querySelectorAll(".loot-drawer")[0];
-const searchLootBack = document.querySelectorAll(".loot-back-btn")[0];
-const searchResults = document.querySelectorAll(".results")[0];
-
-const attackBtn = document.getElementById("attack");
-const attackPreviewDrawer = document.querySelectorAll(".preview-drawer")[1];
-const attackPreviewBack = document.querySelectorAll(".preview-back-btn")[1];
-const attackPreview = document.querySelectorAll(".preview")[1];
-const attackTargets = attackPreview.children;
-const attackLootDrawer = document.querySelectorAll(".loot-drawer")[1];
-const attackLootBack = document.querySelectorAll(".loot-back-btn")[1];
-const attackResults = document.querySelectorAll(".results")[1];
-
-const sleepBtn = document.getElementById("sleep");
-const sleepDrawer = document.querySelectorAll(".preview-drawer")[2];
-const sleepBack = document.querySelectorAll(".preview-back-btn")[2];
-const sleepHr = document.getElementById("sleep-hr");
-const submitSleep = document.getElementById("submit-sleep");
-const sleepTimer = document.getElementById("sleep-timer");
-
-const nightOverlay = document.getElementById("night-overlay");
-
-const deathScreen = document.getElementById("death-screen");
-
 const terrainValues = {
     plains: {
         hunger: -0.5,
@@ -258,7 +221,6 @@ const terrainValues = {
         ]
     },
 }
-
 const entityValues = {
     scorpion: {
         damage: -25,
@@ -322,6 +284,53 @@ const entityValues = {
     }
 }
 
+// Headings:
+const mainHeading = document.getElementById("main-heading");
+const subHeading = document.getElementById("sub-heading");
+const hideHeadings = document.getElementById("hide-headings");
+
+// Directional pad:
+const dPadUp = document.getElementById("dpad-up");
+const dPadLeft = document.getElementById("dpad-left");
+const dPadRight = document.getElementById("dpad-right");
+const dPadDown = document.getElementById("dpad-down");
+const actionBtn = document.getElementById("action-button");
+
+// Action prompt menu:
+const actionPromptModal = document.getElementById("action-prompt-modal");
+const closeActionPrompt = document.getElementById("close-action-prompt");
+const actionPromptBox = document.getElementById("action-prompt-box");
+    // Search:
+    const searchBtn = document.getElementById("search");
+    const searchPreviewDrawer = document.querySelectorAll(".preview-drawer")[0];
+    const searchPreviewBack = document.querySelectorAll(".preview-back-btn")[0];
+    const searchPreview = document.querySelectorAll(".preview")[0];
+    const searchTargets = searchPreview.children;
+    const searchLootDrawer = document.querySelectorAll(".loot-drawer")[0];
+    const searchLootBack = document.querySelectorAll(".loot-back-btn")[0];
+    const searchResults = document.querySelectorAll(".results")[0];
+    // Attack:
+    const attackBtn = document.getElementById("attack");
+    const attackPreviewDrawer = document.querySelectorAll(".preview-drawer")[1];
+    const attackPreviewBack = document.querySelectorAll(".preview-back-btn")[1];
+    const attackPreview = document.querySelectorAll(".preview")[1];
+    const attackTargets = attackPreview.children;
+    const attackLootDrawer = document.querySelectorAll(".loot-drawer")[1];
+    const attackLootBack = document.querySelectorAll(".loot-back-btn")[1];
+    const attackResults = document.querySelectorAll(".results")[1];
+    // Sleep:
+    const sleepBtn = document.getElementById("sleep");
+    const sleepDrawer = document.querySelectorAll(".preview-drawer")[2];
+    const sleepBack = document.querySelectorAll(".preview-back-btn")[2];
+    const sleepHr = document.getElementById("sleep-hr");
+    const submitSleep = document.getElementById("submit-sleep");
+
+// Map overlays:
+const sleepTimer = document.getElementById("sleep-timer");
+const nightOverlay = document.getElementById("night-overlay");
+const deathScreen = document.getElementById("death-screen");
+
+// General functions ---------------------------------------------------------------------------------------------
 function getRandArrItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -365,6 +374,7 @@ function print(message) {
 function addEventListenerList(list, event, fn) {
     for (let el of list) el.addEventListener(event, fn, false);
 }
+// Project specific functions ---------------------------------------------------------------------------------------------
 
 // Check if given vector is within the map's boundaries:
 function inBounds(arr2d, x, y) {
@@ -414,19 +424,19 @@ function createEntities(vector) {
     return vector;
 }
 
-// When entity dies, replace image with gravestone, change class and alt:
-function die(entity) {
-    entity.src = 'img/dead.png';
-    entity.className = 'dead';
-    entity.alt = `dead ${nthWord(entity.className, 1)}`;
-}
-
 function populateMap() {
     for (let x = 0; x < mapArr.length; x++) {
         for (let y = 0; y < mapArr.length; y++) {
             mapArr[x][y] = createEntities(mapArr[x][y]);
         }
     }
+}
+
+// When entity dies, replace image with gravestone, change class and alt:
+function die(entity) {
+    entity.src = 'img/dead.png';
+    entity.className = 'dead';
+    entity.alt = `dead ${nthWord(entity.className, 1)}`;
 }
 
 // Alternate player and entity images:
@@ -460,8 +470,13 @@ function drawMap() {
     print(html);
     centerDiv = mapContainer.children[Math.floor(mapContainer.children.length / 2)];
     // If player and entity occupy same vector, alternate their images:
-    let alternate = setInterval(alternatePlayerAndEntity, 500);
-    numWords(centerDiv.className) === 2 ? alternate : clearInterval(alternate); 
+    if (numWords(centerDiv.className) === 2) {
+        alternate = setInterval(alternatePlayerAndEntity, 500);
+        alternating = true;
+    } else if (numWords(centerDiv.className) === 1 && alternating) { 
+        clearInterval(alternate);
+        alternating = false;
+    }
 }
 
 // Create new edge of map:
@@ -870,9 +885,10 @@ function movePlayer(direction) {
         addTime(1);
     }
 }
-
+// Create size of map based on numRowsAndColumns:
 root.style.setProperty('--num-rows-and-columns', `repeat(${numRowsAndColumns}, 1fr)`);
 
+// Create map:
 createArray(numRowsAndColumns);
 createChunks();
 populateMap();
