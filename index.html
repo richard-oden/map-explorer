@@ -10,7 +10,7 @@
     <main>
         <div id="headings">
             <h1 id="main-heading" style="display: block;">Map Explorer</h1>
-            <p id="sub-heading" style="display: block;">A simple turn-based survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. The space bar or 'A' button on screen will open the action menu. Explore new lands, search for food and water, and be wary of animals.</p>
+            <p id="sub-heading" style="display: block;">A simple randomaly generated survival exploration game lovingly crafted by Richard Oden. Use WASD, arrow keys, or the directional pad to move. The space bar or 'A' button on screen will open the action menu. Explore new lands, search for food and water, and be wary of animals.</p>
             <button id="hide-headings" class="interactable" type="button">OK, got it.</button>
         </div>
 
@@ -50,7 +50,7 @@
                         <button id="sleep" class="interactable" type="button">Sleep</button>
                         <div class="preview-drawer">
                             <img class="preview-back-btn interactable fit-img" src="img/arrow.png" alt="Back">
-                            <input id="sleep-hr" class="interactable" type="text" value="1">
+                            <input id="sleep-hr" class="interactable" type="text" value="8">
                             <span>hr(s)</span>
                             <img id="submit-sleep" class="interactable fit-img" src="img/arrow.png" alt="Back">
                         </div>
@@ -87,8 +87,11 @@
             </div>
         </div>
     </main>
-    <footer>
-
+    <footer class="collapsed">
+        <img id="toggle-footer" src="img/arrow.png" alt="Toggle footer">
+        <a href="https://github.com/richard-oden/map-explorer/blob/master/README.md" target="_blank">About</a>
+        <a href="#">Contact</a>
+        <a href="https://github.com/richard-oden?tab=repositories" target="_blank">More Projects</a>
     </footer>
     <script src="app.js"></script>
 </body>

@@ -1,13 +1,13 @@
-//Variables---------------------------------------------------------------------------------------------
+// Variables---------------------------------------------------------------------------------------------
 
-//Important/misc:
+// Important/misc:
 const root = document.documentElement;
 let numRowsAndColumns = 21;
 const mapContainer = document.getElementById('map');
 let mapArr = [];
 const terrain = ['plains', 'forest', 'desert', 'mountain', 'water'];
 let adjVectors = [ [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1] ];
-//These are used to alternate images as part of drawMap:
+// These are used to alternate images as part of drawMap:
 let centerDiv;
 let alternate;
 let alternating = false;
@@ -330,6 +330,10 @@ const sleepTimer = document.getElementById("sleep-timer");
 const nightOverlay = document.getElementById("night-overlay");
 const deathScreen = document.getElementById("death-screen");
 
+// Footer:
+const footer = document.querySelector("footer");
+const toggleFooter = document.getElementById("toggle-footer");
+
 // General functions ---------------------------------------------------------------------------------------------
 function getRandArrItem(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -470,7 +474,7 @@ function drawMap() {
     print(html);
     centerDiv = mapContainer.children[Math.floor(mapContainer.children.length / 2)];
     // If player and entity occupy same vector, alternate their images:
-    if (numWords(centerDiv.className) === 2) {
+    if (numWords(centerDiv.className) === 2 && !alternating) {
         alternate = setInterval(alternatePlayerAndEntity, 500);
         alternating = true;
     } else if (numWords(centerDiv.className) === 1 && alternating) { 
@@ -539,7 +543,7 @@ function playerDie() {
     sleepTimer.style.display = "";
 
     deathScreen.style.display = "flex";
-    deathScreen.style.opacity = "0.8";
+    window.setTimeout(function(){deathScreen.style.opacity = "0.7"}, 50);
 }
 
 // Change all player meters:
@@ -629,7 +633,7 @@ function checkForAttacks() {
                             attackResults.innerHTML += `<p>You scared it away!</p>`
 
                         } else {
-                            attackResults.innerHTML += `<p>It wouldn't go away!</p>`
+                            attackResults.innerHTML += `<p>You were injured!</p>`
                             changePlayerMeters(entityValues[entity].damage, 0, 0);
                         }
                         printPlayerAdjVectors(searchPreview);
@@ -648,6 +652,7 @@ function checkForAttacks() {
 // Increment time for each move. Each move is considered 30 mins:
 function addTime(numMoves) {
     move += numMoves;
+    // Track time awake. Used to calculate sleep deprivation in changePlayerMeters:
     if (sleepTimer.style.display === "") timeAwake += numMoves;
     for (let m = 0; m < numMoves; m++) {
         min.innerHTML = parseInt(min.innerHTML) + 30;
@@ -670,10 +675,10 @@ function addTime(numMoves) {
     if ((amPM.innerHTML === "pm" && isBetween(parseInt(hr.innerHTML), 8, 12)) || 
         (amPM.innerHTML === "am" && (isBetween(parseInt(hr.innerHTML), 0, 6) || parseInt(hr.innerHTML) === 12))) {
         nightOverlay.style.display = "block";
-        nightOverlay.style.opacity = "0.5";
+        window.setTimeout(function(){nightOverlay.style.opacity = "0.5"}, 50);
     } else {
         nightOverlay.style.opacity = "0";
-        nightOverlay.style.display = "";
+        window.setTimeout(function(){nightOverlay.style.display = ""}, 3000);
     }
 }
 
@@ -966,4 +971,8 @@ submitSleep.addEventListener("click", function() {
     setTimeout(function(){
         sleepTimer.style.display = "";
     }, sleepHr.value*1000);
+});
+
+toggleFooter.addEventListener("click", function() {
+    footer.className = (footer.className === "collapsed" ? "expanded" : "collapsed");
 });
