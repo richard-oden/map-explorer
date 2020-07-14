@@ -56,6 +56,11 @@ main {
     margin: 5px auto;
 }
 
+#hide-headings:active,
+#hide-headings:focus {
+    outline: 0;
+}
+
 #map-wrapper {
     width: 100%;
     height: 100%;
@@ -126,7 +131,8 @@ main {
     opacity: 0.6;
 }
 
-.interactable:hover {
+.interactable:hover,
+.interactable:focus {
     opacity: 1;
     cursor: pointer;
 }
@@ -476,7 +482,8 @@ footer {
     background-color: #949292;
     position: fixed;
     left: 0; bottom: 0;
-    width: 100%; height: 45%;
+    width: 100%; height: auto;
+    padding-top: 20px;
     z-index: 4;
     text-align: center;
     transform: translateY(100%);
@@ -493,14 +500,14 @@ footer {
     display: block;
     padding: 8px;
     width: 40px; height: 40px;
-    position: relative;
-    top: -20px;
-    left: 10%;
+    position: absolute;
+    top: -20px; left: 10%;
     border-radius: 100%;
     transition: opacity 0.3s, transform 0.5s;
     transform: rotate(270deg);
     background-color: #949292;
     opacity: 0.2;
+    z-index: 5;
 }
 
 #toggle-footer:hover {
@@ -509,7 +516,7 @@ footer {
 }
 
 .collapsed:hover {
-    transform: translateY(95%);
+    transform: translateY(90%);
 }
 
 .expanded {
@@ -579,10 +586,6 @@ footer {
 
     .results .quantity {
         font-size: .6em;
-    }
-
-    footer {
-        height: 30%;
     }
 }
 
@@ -654,10 +657,6 @@ footer {
 
     #turn-counter {
         text-align: left;
-    }
-
-    footer {
-        height: 10%;
     }
 
     #footer-content {
