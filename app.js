@@ -192,7 +192,7 @@ const terrainValues = {
                 hunger: 1,
                 thirst: 1,
                 minNum: 10,
-                maxNum: 40,
+                maxNum: 30,
                 rarity: 60,
                 img: "seaweed"
             },
@@ -534,6 +534,25 @@ function changeMeter(meter, value) {
     } else meter.innerHTML = 0;
 }
 
+// Return message to be displayed on game over screen:
+function getDeathMessage() {
+    let message = "You"
+    if (attackResults.innerHTML) {
+        Object.keys(entityValues).forEach(entityName => {
+            if (attackResults.innerHTML.includes(entityName)) message += ` were killed by a ${entityName}. :(`;
+        });
+    } else if (playerMeters[1].innerHTML == 0) {
+        message += ` starved to death. :(`;
+    } else if (playerMeters[2].innerHTML == 0) {
+        message += ` died of dehydration. :(`;
+    } else if (timeAwake > 36) {
+        message += ` died of sleep deprivation. :(`
+    } else {
+        message += ` died. :(`
+    }
+    return message;
+}
+
 // Kill player and show game over screen:
 function playerDie() {
     playerMeters[0].innerHTML = 0;
@@ -542,6 +561,7 @@ function playerDie() {
     actionPromptModal.style.display = "";
     sleepTimer.style.display = "";
 
+    deathScreen.firstElementChild.innerHTML = getDeathMessage();
     deathScreen.style.display = "flex";
     window.setTimeout(function(){deathScreen.style.opacity = "0.7"}, 50);
 }
@@ -626,12 +646,11 @@ function checkForAttacks() {
                 }
                 adjEntities.forEach(entity => {
                     if (chance(entityValues[entity].aggroChance)) {
-                        actionPromptModal.style.display = "";
+                        actionPromptModal.style.display = "block";
                         sleepTimer.style.display = "";
                         attackResults.innerHTML = `<p>A ${entity} attacked!</p>`
                         if (chance(entityValues[entity].winChance)) {
                             attackResults.innerHTML += `<p>You scared it away!</p>`
-
                         } else {
                             attackResults.innerHTML += `<p>You were injured!</p>`
                             changePlayerMeters(entityValues[entity].damage, 0, 0);
@@ -640,7 +659,6 @@ function checkForAttacks() {
                         printPlayerAdjVectors(attackPreview);
                         addEventListenerList(searchTargets, 'click', search);
                         addEventListenerList(attackTargets, 'click', attack);
-                        actionPromptModal.style.display = "block";
                         toggleDrawer(attackLootDrawer);
                     }
                 });
@@ -670,15 +688,20 @@ function addTime(numMoves) {
                 hr.innerHTML = "1";
             }
         };
+        moveEntities();
     }
     // Show night overlay between 9pm and 6am:
     if ((amPM.innerHTML === "pm" && isBetween(parseInt(hr.innerHTML), 8, 12)) || 
         (amPM.innerHTML === "am" && (isBetween(parseInt(hr.innerHTML), 0, 6) || parseInt(hr.innerHTML) === 12))) {
-        nightOverlay.style.display = "block";
-        window.setTimeout(function(){nightOverlay.style.opacity = "0.5"}, 50);
+        if (nightOverlay.style.display !== "block") {
+            nightOverlay.style.display = "block";
+            window.setTimeout(function(){nightOverlay.style.opacity = "0.5"}, 50);
+        }
     } else {
-        nightOverlay.style.opacity = "0";
-        window.setTimeout(function(){nightOverlay.style.display = ""}, 3000);
+        if (nightOverlay.style.display === "block") {
+            nightOverlay.style.opacity = "0";
+            window.setTimeout(function(){nightOverlay.style.display = ""}, 3000);
+        }
     }
 }
 
@@ -695,6 +718,10 @@ function toggleActionPrompt() {
     if (!inputDisabled().slice(1, 3).includes(false)) {
         if (actionPromptModal.style.display === "block") {
             actionPromptModal.style.display = "";
+            attackResults.innerHTML = '';
+            searchResults.innerHTML = '';
+            attackLootDrawer.style.transform = 'translateX(100%)';
+            searchLootDrawer.style.transform = 'translateX(100%)';
         } else {
             printPlayerAdjVectors(searchPreview);
             printPlayerAdjVectors(attackPreview);
@@ -800,7 +827,7 @@ function simumlateCombat(entity) {
         getAndPrintLoot(attackResults.querySelector('ul'), entityValues[entityName].loot);
         toggleDrawer(attackLootDrawer);
     } else {
-        attackResults.innerHTML += `<p>You lost!</p>`
+        attackResults.innerHTML += `<p>You lost to the ${entityName}!</p>`
         changePlayerMeters(entityValues[entityName].damage, 0, 0);
         toggleDrawer(attackLootDrawer);
     }
@@ -823,8 +850,6 @@ function attack(event) {
             let entity = attackTarget.firstChild;
             simumlateCombat(entity);
             updateMap(attackTarget);
-        } else {
-            console.log('No one here!');
         }
     }
 }
@@ -836,7 +861,6 @@ function sleep(move) {
             addTime(1);
             changePlayerMeters(2, 0, 0);
             applyTerrainEffects(0.5);
-            moveEntities();
             drawMap();
         }, m * 500);
     }
@@ -884,7 +908,6 @@ function movePlayer(direction) {
                 mapArr[mapArr.length-1] = drawHorizon(mapArr[mapArr.length-1]);
                 break;
         }
-        moveEntities();
         drawMap();
         applyTerrainEffects(1);
         addTime(1);
@@ -945,22 +968,16 @@ window.addEventListener("keydown", function(event) {if (event.code === "Space") 
 actionBtn.addEventListener("click", function() {toggleActionPrompt()});
 
 // Close action prompt if exit button is pressed:
-closeActionPrompt.addEventListener("click", function() {actionPromptModal.style.display = ""});
+closeActionPrompt.addEventListener("click", function() {toggleActionPrompt()});
 
 // Open drawers when action prompt buttons are pressed:
 searchBtn.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
 searchPreviewBack.addEventListener("click", function() {toggleDrawer(searchPreviewDrawer)});
-searchLootBack.addEventListener("click", function() {
-    toggleDrawer(searchLootDrawer)
-    searchResults.innerHTML = '';
-});
+searchLootBack.addEventListener("click", function() {toggleDrawer(searchLootDrawer)});
 
 attackBtn.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
 attackPreviewBack.addEventListener("click", function() {toggleDrawer(attackPreviewDrawer)});
-attackLootBack.addEventListener("click", function() {
-    toggleDrawer(attackLootDrawer)
-    attackResults.innerHTML = '';
-});
+attackLootBack.addEventListener("click", function() {toggleDrawer(attackLootDrawer)});
 
 sleepBtn.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
 sleepBack.addEventListener("click", function() {toggleDrawer(sleepDrawer)});
