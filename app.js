@@ -901,7 +901,7 @@ function movePlayer(direction) {
                 }
                 break;
 
-                case "down":
+            case "down":
                     for (let x = 0; x < mapArr.length-1; x++) {
                         mapArr[x] = mapArr[x+1];
                 }
