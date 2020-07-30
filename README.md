@@ -1,5 +1,7 @@
 # Map Explorer
-This project was made to fulfill the requirements of Code Louisville's May 2020 front-end web development class. It is an experimental survival exploration game that represents my first attempt at making a game.
+This project was made to fulfill the requirements of Code Louisville's May 2020 front-end web development class. It is an experimental survival exploration game that represents my first attempt at making a game. 
+
+NOTE: As of recently, you may experience some image resizing issues when using Chrome or Safari. For whatever reason, `object-fit` is now affecting images differently inside grid items. At least on my computer, Edge still displays them correctly, though.
 
 ## Gameplay
 The goal of the game is to survive as long as possible. You will need to monitor your energy, hunger, and thirst. This will require you to search for food and water, sleep, and avoid animal attacks. The game world is randomly generated, and new terrain is generated as you move in each direction. When you return to a previous area, it will be generated anew, so be sure you are completely finished before leaving.
